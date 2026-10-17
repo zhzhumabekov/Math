@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дроби в движении</title>
+<style>
+  :root {
+    --bg: #f6f3ec; --card: #ffffff; --ink: #1f2430; --muted: #6b7280;
+    --line: #ddd6c8; --empty: #eee9de;
+    --a: #e4572e; --b: #2e86ab; --c: #5b9a2f; --gold: #f2a541;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15171c; --card: #1f2229; --ink: #ece9e2; --muted: #9aa0aa;
+            --line: #353a44; --empty: #2b2f38; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  header { max-width: 960px; margin: 0 auto; padding: 32px 16px 8px; }
+  header h1 { margin: 0 0 4px; font-size: clamp(28px, 5vw, 42px); }
+  header p { margin: 0; color: var(--muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  nav a {
+    color: var(--ink); text-decoration: none; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--line); font-size: 14px; background: var(--card);
+  }
+  nav a:hover { border-color: var(--a); }
+  main { max-width: 960px; margin: 0 auto; padding: 8px 16px 64px; }
+  section {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 24px; margin-top: 20px;
+  }
+  h2 { margin: 0 0 4px; font-size: 22px; }
+  h2 small { color: var(--muted); font-weight: 500; font-size: 14px; margin-left: 6px; }
+  .lead { color: var(--muted); margin: 0 0 16px; }
+  .grid { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: center; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } section { padding: 18px; } }
+
+  /* controls */
+  .ctl { display: grid; gap: 14px; }
+  label.r { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 14px; color: var(--muted); }
+  label.r b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  label.r input { grid-column: 1 / -1; width: 100%; accent-color: var(--a); }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    font: inherit; font-size: 14px; cursor: pointer; padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    transition: transform .1s, border-color .2s;
+  }
+  button:hover { border-color: var(--a); }
+  button:active { transform: scale(.96); }
+  button.on, button.primary { background: var(--a); color: #fff; border-color: var(--a); }
+  button:disabled { opacity: .4; cursor: default; }
+
+  /* fraction typography */
+  .frac {
+    display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle;
+    font-weight: 700; line-height: 1.1; margin: 0 .15em; font-variant-numeric: tabular-nums;
+  }
+  .frac > span:first-child { border-bottom: .09em solid currentColor; padding: 0 .2em .05em; }
+  .frac > span:last-child { padding: .05em .2em 0; }
+  .big { font-size: 56px; }
+  .mid { font-size: 26px; }
+  .info { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .stage { min-height: 160px; display: grid; place-items: center; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  /* animations */
+  .pop { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both; transform-box: fill-box; transform-origin: center; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .fade { animation: fade .4s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-4px); } }
+  .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .45s ease forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* number line */
+  #nlMarker { transition: transform .45s cubic-bezier(.4, 1.4, .6, 1); }
+
+  /* addition */
+  .row { display: grid; grid-template-columns: 90px 1fr; gap: 12px; align-items: center; margin: 10px 0; }
+  .row .lbl { text-align: right; font-size: 22px; }
+  .step-text { min-height: 52px; font-size: 17px; margin: 0 0 8px; }
+  .dots { display: flex; gap: 6px; margin: 12px 0; }
+  .dots i { width: 28px; height: 6px; border-radius: 3px; background: var(--line); transition: background .3s; }
+  .dots i.on { background: var(--a); }
+
+  /* compare meters */
+  .meter { position: relative; height: 44px; border-radius: 10px; background: var(--empty); overflow: hidden; margin: 8px 0; }
+  .meter > i { position: absolute; inset: 0 auto 0 0; width: 0; transition: width .7s cubic-bezier(.4, 1.3, .6, 1); }
+  .meter > u { position: absolute; inset: 0; }
+  .vs { display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 30px; margin-bottom: 8px; }
+  .sign { font-size: 48px; font-weight: 800; color: var(--gold); width: 1.2em; text-align: center; }
+
+  /* uses */
+  h3 { margin: 24px 0 10px; font-size: 18px; }
+  .uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .use { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; font-size: 14px; }
+  .use .ico { font-size: 28px; }
+  .use b { display: block; font-size: 16px; margin: 4px 0; }
+  .use p { margin: 0 0 8px; color: var(--muted); }
+  .use .sign-q { font-size: 13px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .use .sign-q em { color: var(--a); font-style: normal; font-weight: 600; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  select {
+    font: inherit; padding: 8px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--ink); width: 100%;
+  }
+  .grow { animation: grow .6s cubic-bezier(.3, 1.3, .5, 1) both; transform-box: fill-box; transform-origin: bottom; }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .hand { transition: transform .6s cubic-bezier(.4, 1.4, .6, 1); }
+  .answer { font-size: 15px; margin-top: 10px; }
+  .answer b { color: var(--a); }
+  .ing { display: grid; grid-template-columns: 90px 110px 1fr; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .ing .amt { font-size: 20px; font-weight: 700; }
+  .ing svg { width: auto; height: 40px; }
+
+  /* quiz */
+  .quiz-in { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .fin { display: inline-flex; flex-direction: column; gap: 4px; align-items: center; }
+  .fin input {
+    width: 64px; text-align: center; font: 700 24px system-ui; padding: 4px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  .fin hr { width: 70px; border: 0; border-top: 3px solid var(--ink); margin: 0; }
+  #qMsg { min-height: 28px; font-weight: 600; margin-top: 12px; }
+  .ok { color: var(--c); } .bad { color: var(--a); }
+  .score { margin-left: auto; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Дроби в движении</h1>
+  <p>Двигайте ползунки, нажимайте кнопки и смотрите, как устроены дроби.</p>
+  <nav>
+    <a href="#s1">1. Часть целого</a>
+    <a href="#s2">2. Числовая прямая</a>
+    <a href="#s3">3. Равные дроби</a>
+    <a href="#s4">4. Сложение</a>
+    <a href="#s5">5. Сравнение</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое дробь <small>часть целого</small></h2>
+    <p class="lead">Знаменатель — на сколько равных частей разрезали целое. Числитель — сколько частей взяли.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f1Label"></div>
+        <label class="r">Числитель (взяли) <b id="n1v"></b><input type="range" id="n1" min="0" max="12" value="3"></label>
+        <label class="r">Знаменатель (частей в целом) <b id="d1v"></b><input type="range" id="d1" min="1" max="12" value="4"></label>
+        <div class="btns">
+          <button data-view="pie" class="on">Пицца</button>
+          <button data-view="bar">Шоколадка</button>
+        </div>
+      </div>
+      <div>
+        <div class="stage"><svg id="f1Svg"></svg></div>
+        <div class="info" id="f1Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Дробь на числовой прямой <small>дробь — это число</small></h2>
+    <p class="lead">Делим отрезок от 0 до 1 на равные части и прыгаем вперёд на нужное число шагов.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f2Label"></div>
+        <label class="r">Числитель (прыжков) <b id="n2v"></b><input type="range" id="n2" min="0" max="12" value="5"></label>
+        <label class="r">Знаменатель (размер шага) <b id="d2v"></b><input type="range" id="d2" min="1" max="10" value="3"></label>
+        <div class="btns"><button class="primary" id="jump">Прыгать ▶</button></div>
+      </div>
+      <div class="stage"><svg id="nlSvg"></svg></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Равные дроби <small>одна и та же часть — разные записи</small></h2>
+    <p class="lead">Если разрезать каждый кусок ещё на k частей, кусков станет больше, но закрашенная площадь не изменится.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Числитель <b id="n3v"></b><input type="range" id="n3" min="1" max="5" value="1"></label>
+        <label class="r">Знаменатель <b id="d3v"></b><input type="range" id="d3" min="2" max="6" value="2"></label>
+        <label class="r">Режем каждый кусок на k частей <b id="k3v"></b><input type="range" id="k3" min="1" max="6" value="2"></label>
+        <div class="btns"><button id="simplify">Сократить</button></div>
+      </div>
+      <div>
+        <div class="row"><div class="lbl" id="e3Top"></div><svg id="e3TopSvg"></svg></div>
+        <div class="row"><div class="lbl" id="e3Bot"></div><svg id="e3BotSvg"></svg></div>
+        <div class="info mid" id="e3Chain"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Сложение дробей <small>по шагам</small></h2>
+    <p class="lead">Складывать можно только куски одинакового размера — поэтому сначала приводим к общему знаменателю.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="addLabel"></div>
+        <label class="r">Первая: числитель <b id="aNv"></b><input type="range" id="aN" min="1" max="8" value="1"></label>
+        <label class="r">Первая: знаменатель <b id="aDv"></b><input type="range" id="aD" min="2" max="8" value="3"></label>
+        <label class="r">Вторая: числитель <b id="bNv"></b><input type="range" id="bN" min="1" max="8" value="1"></label>
+        <label class="r">Вторая: знаменатель <b id="bDv"></b><input type="range" id="bD" min="2" max="8" value="4"></label>
+      </div>
+      <div>
+        <div class="dots" id="addDots"><i></i><i></i><i></i><i></i></div>
+        <p class="step-text" id="addText"></p>
+        <div id="addStage"></div>
+        <div class="btns" style="margin-top:12px">
+          <button id="addPrev">◀ Назад</button>
+          <button class="primary" id="addNext">Дальше ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Сравнение дробей <small>какая больше?</small></h2>
+    <p class="lead">Сравниваем длины полосок. Проверка без картинки: перемножаем «крест-накрест».</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Первая: числитель <b id="cAnv"></b><input type="range" id="cAn" min="0" max="10" value="2"></label>
+        <label class="r">Первая: знаменатель <b id="cAdv"></b><input type="range" id="cAd" min="1" max="10" value="3"></label>
+        <label class="r">Вторая: числитель <b id="cBnv"></b><input type="range" id="cBn" min="0" max="10" value="3"></label>
+        <label class="r">Вторая: знаменатель <b id="cBdv"></b><input type="range" id="cBd" min="1" max="10" value="5"></label>
+      </div>
+      <div>
+        <div class="vs"><span id="cA"></span><span class="sign" id="cSign"></span><span id="cB"></span></div>
+        <div class="meter"><i id="mA" style="background:var(--a)"></i><u id="mAt"></u></div>
+        <div class="meter"><i id="mB" style="background:var(--b)"></i><u id="mBt"></u></div>
+        <p class="lead" id="cWhy" style="margin:12px 0 0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны дроби <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Дробь нужна, когда целое приходится делить на части, а целыми числами ответ не записать.
+      3 пиццы на 4 человека — каждому не 0 и не 1 пицца, а <b>¾</b>. Дробь — это и есть результат деления: 3 : 4 = 3/4.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🍕</div><b>Делить поровну</b>
+        <p>Пицца, торт, деньги, работа на команду, наследство — когда не делится нацело.</p>
+        <div class="sign-q">Задачи: сколько достанется каждому, на сколько человек хватит.<br><em>Признак:</em> «разделили поровну» и нацело не делится.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🍳</div><b>Рецепты и измерения</b>
+        <p>½ стакана муки, ¾ ложки соли, дюймы ⅜″ в инструментах, размеры в чертежах.</p>
+        <div class="sign-q">Задачи: приготовить на 6 человек вместо 4, перевести мерки.<br><em>Признак:</em> «половина, треть, четверть».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏷️</div><b>Проценты, скидки, доли</b>
+        <p>Процент — это дробь со знаменателем 100: 25% = 25/100 = ¼. Доля в бизнесе, оценки, статистика.</p>
+        <div class="sign-q">Задачи: цена со скидкой, налог, какая часть класса сдала тест.<br><em>Признак:</em> «%», «часть от», «каждый третий».</div>
+      </div>
+      <div class="use">
+        <div class="ico">⏱️</div><b>Время</b>
+        <p>Четверть часа = 15 мин, полчаса = 30 мин, ¾ часа = 45 мин.</p>
+        <div class="sign-q">Задачи: скорость, расписание, сколько успеете за 20 минут.<br><em>Признак:</em> минуты как часть часа.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎲</div><b>Вероятность</b>
+        <p>Шанс выбросить шестёрку — 1/6, выиграть в «орёл или решка» — 1/2.</p>
+        <div class="sign-q">Задачи: игры, прогноз погоды, страхование.<br><em>Признак:</em> «каков шанс».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎵</div><b>Музыка и карты</b>
+        <p>Ноты: целая, ½, ¼, ⅛. Масштаб карты 1 : 100 000 — тоже дробь.</p>
+        <div class="sign-q">Задачи: ритм, расстояние по карте.<br><em>Признак:</em> «в одном … помещается столько-то …».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="pizza" class="on">🍕 Пицца на компанию</button>
+      <button data-use="recipe">🍳 Рецепт</button>
+      <button data-use="sale">🏷️ Скидка</button>
+      <button data-use="clock">⏱️ Часы</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Какая часть фигуры закрашена — или решите задачу. Подойдёт и равная дробь.</p>
+    <div class="grid">
+      <div class="stage" id="qStage"><svg id="qSvg"></svg><div id="qText" class="mid" style="display:none;font-size:20px"></div></div>
+      <div>
+        <div class="quiz-in" id="qBox">
+          <div class="fin"><input id="qN" inputmode="numeric" aria-label="числитель"><hr><input id="qD" inputmode="numeric" aria-label="знаменатель"></div>
+          <div class="btns">
+            <button class="primary" id="qCheck">Проверить</button>
+            <button id="qNew">Новое задание</button>
+          </div>
+          <span class="score" id="qScore"></span>
+        </div>
+        <div id="qMsg"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+const lcm = (a, b) => (a / gcd(a, b)) * b;
+const frac = (n, d, color) =>
+  `<span class="frac"${color ? ` style="color:${color}"` : ''}><span>${n}</span><span>${d}</span></span>`;
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+// parts: [{n, color}] — подряд закрашенные куски разных цветов
+function colorAt(parts, i) {
+  let acc = 0;
+  for (const p of parts) { acc += p.n; if (i < acc) return p.color; }
+  return null;
+}
+const total = parts => parts.reduce((s, p) => s + p.n, 0);
+
+function drawPies(svg, den, parts) {
+  svg.innerHTML = '';
+  const S = 140, R = 62;
+  const count = Math.max(1, Math.ceil(total(parts) / den));
+  const cols = Math.min(count, 4), rows = Math.ceil(count / cols);
+  svg.setAttribute('viewBox', `0 0 ${cols * S} ${rows * S}`);
+  svg.style.maxWidth = cols * 190 + 'px';
+  for (let p = 0; p < count; p++) {
+    const cx = (p % cols) * S + S / 2, cy = Math.floor(p / cols) * S + S / 2;
+    for (let i = 0; i < den; i++) {
+      const idx = p * den + i, color = colorAt(parts, idx);
+      let shape;
+      if (den === 1) {
+        shape = el('circle', { cx, cy, r: R }, svg);
+      } else {
+        const a0 = -Math.PI / 2 + (i * 2 * Math.PI) / den, a1 = a0 + (2 * Math.PI) / den;
+        const x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0);
+        const x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+        shape = el('path', { d: `M${cx},${cy} L${x0},${y0} A${R},${R} 0 ${den === 2 ? 0 : 0} 1 ${x1},${y1} Z` }, svg);
+      }
+      shape.style.fill = color || 'var(--empty)';
+      shape.style.stroke = 'var(--card)';
+      shape.style.strokeWidth = 2.5;
+      if (color) { shape.classList.add('pop'); shape.style.animationDelay = idx * 70 + 'ms'; }
+    }
+  }
+}
+
+function drawBars(svg, den, parts, opts = {}) {
+  svg.innerHTML = '';
+  const W = 600, H = opts.h || 48, G = 10;
+  const rows = Math.max(1, Math.ceil(total(parts) / den));
+  svg.setAttribute('viewBox', `0 0 ${W} ${rows * (H + G) - G}`);
+  const cw = W / den;
+  for (let r = 0; r < rows; r++) {
+    for (let i = 0; i < den; i++) {
+      const idx = r * den + i, color = colorAt(parts, idx);
+      const rect = el('rect', { x: i * cw, y: r * (H + G), width: cw, height: H }, svg);
+      rect.style.fill = color || 'var(--empty)';
+      rect.style.stroke = 'var(--card)';
+      rect.style.strokeWidth = den > 30 ? 1 : 2.5;
+      if (color) { rect.classList.add('pop'); rect.style.animationDelay = Math.min(idx * 45, 1500) + 'ms'; }
+    }
+    const outline = el('rect', { x: 0, y: r * (H + G), width: W, height: H, rx: 4, fill: 'none' }, svg);
+    outline.style.stroke = 'var(--line)';
+  }
+}
+
+function bindRange(id, onChange) {
+  const input = $(id), out = $(id + 'v');
+  const update = () => { if (out) out.textContent = input.value; onChange(); };
+  input.addEventListener('input', update);
+  return () => +input.value;
+}
+const fmt = x => +x.toFixed(3) + '';
+
+// ---------- 1. Часть целого ----------
+let view1 = 'pie';
+const n1 = bindRange('n1', render1), d1 = bindRange('d1', render1);
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => {
+  view1 = b.dataset.view;
+  document.querySelectorAll('[data-view]').forEach(x => x.classList.toggle('on', x === b));
+  render1();
+}));
+function render1() {
+  const n = n1(), d = d1();
+  $('n1v').textContent = n; $('d1v').textContent = d;
+  $('f1Label').innerHTML = frac(n, d, 'var(--a)');
+  const parts = [{ n, color: 'var(--a)' }];
+  view1 === 'pie' ? drawPies($('f1Svg'), d, parts) : drawBars($('f1Svg'), d, parts, { h: 70 });
+  const g = gcd(n, d), chips = [];
+  chips.push(n < d ? 'правильная дробь (меньше 1)' : n === d ? 'равна целому: 1' : 'неправильная дробь (больше 1)');
+  chips.push('десятичная: ' + fmt(n / d));
+  chips.push('проценты: ' + fmt((n / d) * 100) + '%');
+  if (n > d && n % d) chips.push(`смешанное число: ${Math.floor(n / d)} целых и ${n % d}/${d}`);
+  if (n && g > 1) chips.push(`сокращается: ${n / g}/${d / g}`);
+  $('f1Info').innerHTML = chips.map(c => `<span class="chip fade">${c}</span>`).join('');
+}
+
+// ---------- 2. Числовая прямая ----------
+const n2 = bindRange('n2', render2), d2 = bindRange('d2', render2);
+let jumpTimers = [];
+function render2(jumping) {
+  jumpTimers.forEach(clearTimeout); jumpTimers = [];
+  const n = n2(), d = d2();
+  $('n2v').textContent = n; $('d2v').textContent = d;
+  $('f2Label').innerHTML = frac(n, d, 'var(--b)');
+  const range = Math.max(1, Math.ceil(n / d));
+  const svg = $('nlSvg'); svg.innerHTML = '';
+  const X0 = 30, X1 = 590, Y = 110;
+  svg.setAttribute('viewBox', '0 0 620 160');
+  const px = v => X0 + ((X1 - X0) * v) / range;
+  const axis = el('line', { x1: X0 - 10, y1: Y, x2: X1 + 15, y2: Y }, svg);
+  axis.style.stroke = 'var(--ink)'; axis.style.strokeWidth = 2;
+  for (let i = 0; i <= range * d; i++) {
+    const whole = i % d === 0, x = px(i / d);
+    const t = el('line', { x1: x, y1: Y - (whole ? 12 : 7), x2: x, y2: Y + (whole ? 12 : 7) }, svg);
+    t.style.stroke = 'var(--ink)'; t.style.strokeWidth = whole ? 2.5 : 1.5;
+    if (whole) {
+      const txt = el('text', { x, y: Y + 36, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 700 }, svg);
+      txt.textContent = i / d; txt.style.fill = 'var(--ink)';
+    }
+  }
+  const marker = el('g', { id: 'nlMarker' }, svg);
+  const dot = el('circle', { cx: 0, cy: Y, r: 9 }, marker); dot.style.fill = 'var(--b)';
+  const tip = el('text', { x: 0, y: Y - 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700 }, marker);
+  tip.style.fill = 'var(--b)';
+  const place = k => {
+    marker.setAttribute('transform', `translate(${px(k / d)},0)`);
+    tip.textContent = k === 0 ? '0' : `${k}/${d}`;
+  };
+  if (!jumping) { place(n); return; }
+  place(0);
+  for (let k = 0; k < n; k++) {
+    jumpTimers.push(setTimeout(() => {
+      const xa = px(k / d), xb = px((k + 1) / d), h = Math.min(60, (xb - xa) * 0.7 + 14);
+      const arc = el('path', { d: `M${xa},${Y - 4} Q${(xa + xb) / 2},${Y - h * 1.6} ${xb},${Y - 4}`, pathLength: 1, fill: 'none' }, svg);
+      arc.style.stroke = 'var(--b)'; arc.style.strokeWidth = 2.5; arc.classList.add('draw');
+      svg.appendChild(marker);
+      place(k + 1);
+    }, 300 + k * 480));
+  }
+}
+$('jump').addEventListener('click', () => render2(true));
+
+// ---------- 3. Равные дроби ----------
+const n3 = bindRange('n3', render3), d3 = bindRange('d3', render3), k3 = bindRange('k3', render3);
+function render3() {
+  const d = d3(); $('n3').max = d - 1;
+  const n = Math.min(n3(), d - 1), k = k3();
+  $('n3v').textContent = n; $('d3v').textContent = d; $('k3v').textContent = k;
+  $('e3Top').innerHTML = frac(n, d, 'var(--c)');
+  $('e3Bot').innerHTML = frac(n * k, d * k, 'var(--c)');
+  drawBars($('e3TopSvg'), d, [{ n, color: 'var(--c)' }]);
+  drawBars($('e3BotSvg'), d * k, [{ n: n * k, color: 'var(--c)' }]);
+  const chain = [];
+  for (let i = 1; i <= 6; i++)
+    chain.push(`<span style="cursor:pointer;opacity:${i === k ? 1 : .45}" data-k="${i}">${frac(n * i, d * i)}</span>`);
+  $('e3Chain').innerHTML = chain.join('<span style="align-self:center">=</span>');
+  $('e3Chain').querySelectorAll('[data-k]').forEach(s =>
+    s.addEventListener('click', () => { $('k3').value = s.dataset.k; render3(); }));
+}
+$('simplify').addEventListener('click', () => {
+  const n = n3() * k3(), d = d3() * k3(), g = gcd(n, d);
+  $('n3').value = n / g; $('d3').value = d / g; $('k3').value = 1; render3();
+});
+
+// ---------- 4. Сложение ----------
+let step = 0;
+const aN = bindRange('aN', resetAdd), aD = bindRange('aD', resetAdd);
+const bN = bindRange('bN', resetAdd), bD = bindRange('bD', resetAdd);
+function resetAdd() { step = 0; renderAdd(); }
+function rowHTML(label) { return `<div class="row fade"><div class="lbl">${label}</div><svg></svg></div>`; }
+function renderAdd() {
+  $('aN').max = aD(); $('bN').max = bD();
+  const a = Math.min(aN(), aD()), b = aD(), c = Math.min(bN(), bD()), d = bD();
+  ['aN', 'aD', 'bN', 'bD'].forEach((id, i) => $(id + 'v').textContent = [a, b, c, d][i]);
+  const L = lcm(b, d), a2 = a * L / b, c2 = c * L / d, s = a2 + c2, g = gcd(s, L);
+  const A = 'var(--a)', B = 'var(--b)', C = 'var(--c)';
+  $('addLabel').innerHTML = `${frac(a, b, A)} + ${frac(c, d, B)} = ?`;
+  document.querySelectorAll('#addDots i').forEach((x, i) => x.classList.toggle('on', i <= step));
+  $('addPrev').disabled = step === 0; $('addNext').disabled = step === 3;
+  const stage = $('addStage');
+  let text, rows;
+  if (step === 0) {
+    text = `Куски разного размера: ${frac(1, b)} и ${frac(1, d)}. Сложить их «как есть» нельзя.`;
+    rows = [[frac(a, b, A), b, [{ n: a, color: A }]], [frac(c, d, B), d, [{ n: c, color: B }]]];
+  } else if (step === 1) {
+    text = `Общий знаменатель — НОК(${b}, ${d}) = ${L}. Режем оба целых на ${L} частей.`;
+    rows = [[frac(a2, L, A), L, [{ n: a2, color: A }]], [frac(c2, L, B), L, [{ n: c2, color: B }]]];
+  } else if (step === 2) {
+    text = `Теперь куски одинаковые — складываем числители: ${a2} + ${c2} = ${s}.`;
+    rows = [[frac(s, L), L, [{ n: a2, color: A }, { n: c2, color: B }]]];
+  } else {
+    const whole = Math.floor(s / L), rest = s % L;
+    text = g > 1 ? `Сокращаем на ${g}: ${frac(s, L)} = ${frac(s / g, L / g, C)}` : `Дробь ${frac(s, L, C)} уже несократима.`;
+    if (whole && rest) text += ` = ${whole} целых и ${frac(rest / g, L / g)}`;
+    if (whole && !rest) text += ` = ${whole}`;
+    rows = [[frac(s / g, L / g, C), L / g, [{ n: s / g, color: C }]]];
+  }
+  $('addText').innerHTML = `<span class="fade" style="display:inline-block">${text}</span>`;
+  stage.innerHTML = rows.map(r => rowHTML(r[0])).join('');
+  stage.querySelectorAll('svg').forEach((svg, i) => drawBars(svg, rows[i][1], rows[i][2]));
+}
+$('addPrev').addEventListener('click', () => { step = Math.max(0, step - 1); renderAdd(); });
+$('addNext').addEventListener('click', () => { step = Math.min(3, step + 1); renderAdd(); });
+
+// ---------- 5. Сравнение ----------
+const cAn = bindRange('cAn', renderCmp), cAd = bindRange('cAd', renderCmp);
+const cBn = bindRange('cBn', renderCmp), cBd = bindRange('cBd', renderCmp);
+function renderCmp() {
+  const a = cAn(), b = cAd(), c = cBn(), d = cBd();
+  const max = Math.max(1, a / b, c / d);
+  $('cA').innerHTML = frac(a, b, 'var(--a)');
+  $('cB').innerHTML = frac(c, d, 'var(--b)');
+  $('mA').style.width = (a / b / max) * 100 + '%';
+  $('mB').style.width = (c / d / max) * 100 + '%';
+  const ticks = (den) => `repeating-linear-gradient(90deg, transparent 0 calc(${100 / (den * max)}% - 2px), var(--card) calc(${100 / (den * max)}% - 2px) ${100 / (den * max)}%)`;
+  $('mAt').style.background = ticks(b);
+  $('mBt').style.background = ticks(d);
+  const l = a * d, r = c * b, sign = l > r ? '>' : l < r ? '<' : '=';
+  const s = $('cSign'); s.textContent = sign; s.classList.remove('pop'); void s.offsetWidth; s.classList.add('pop');
+  $('cWhy').innerHTML = `Крест-накрест: ${a} · ${d} = <b>${l}</b> и ${c} · ${b} = <b>${r}</b>, значит ${a}/${b} ${sign} ${c}/${d}.`;
+}
+
+// ---------- 6. Зачем нужны дроби ----------
+const slider = (id, label, min, max, val, step = 1) =>
+  `<label class="r">${label} <b id="${id}v"></b><input type="range" id="${id}" min="${min}" max="${max}" value="${val}" step="${step}"></label>`;
+const chips = list => `<div class="info">${list.map(c => `<span class="chip fade">${c}</span>`).join('')}</div>`;
+const money = x => Math.round(x).toLocaleString('ru-RU') + ' ₽';
+// дробь n/d в виде смешанного числа после сокращения
+function mixed(n, d, color) {
+  const g = gcd(n, d); n /= g; d /= g;
+  const w = Math.floor(n / d), r = n % d;
+  if (!r) return `<b${color ? ` style="color:${color}"` : ''}>${w}</b>`;
+  return (w ? `<b${color ? ` style="color:${color}"` : ''}>${w}</b>&thinsp;` : '') + frac(r, d, color);
+}
+
+let useTab = 'pizza';
+const USES = {
+  pizza: {
+    controls: slider('zP', 'Сколько пицц', 1, 5, 3) + slider('zN', 'Сколько человек', 2, 12, 4),
+    render() {
+      const P = +$('zP').value, N = +$('zN').value;
+      $('zPv').textContent = P; $('zNv').textContent = N;
+      const S = 140, R = 62, cols = Math.min(P, 3), rows = Math.ceil(P / cols);
+      let svg = '';
+      for (let p = 0; p < P; p++) {
+        const cx = (p % cols) * S + S / 2, cy = Math.floor(p / cols) * S + S / 2;
+        for (let i = 0; i < N; i++) {
+          const a0 = -Math.PI / 2 + (i * 2 * Math.PI) / N, a1 = a0 + (2 * Math.PI) / N;
+          const d = `M${cx},${cy} L${cx + R * Math.cos(a0)},${cy + R * Math.sin(a0)} A${R},${R} 0 0 1 ${cx + R * Math.cos(a1)},${cy + R * Math.sin(a1)} Z`;
+          svg += `<path class="pop" d="${d}" style="fill:hsl(${(i * 360) / N},65%,55%);stroke:var(--card);stroke-width:2.5;animation-delay:${(p * N + i) * 40}ms"/>`;
+        }
+      }
+      $('useOut').innerHTML = `
+        <div class="mid">${P} : ${N} = ${frac(P, N, 'var(--a)')} пиццы каждому</div>
+        <svg viewBox="0 0 ${cols * S} ${rows * S}" style="max-width:${cols * 170}px;margin:10px auto">${svg}</svg>
+        ${chips([`сокращённо: ${mixed(P, N)}`, `≈ ${fmt(P / N)} пиццы`, `один кусок = ${frac(1, N)} пиццы`])}
+        <p class="answer">Каждую пиццу режем на ${N} кусков (цвет — это человек). Каждый берёт по куску из каждой пиццы:
+        ${P} кусков по ${frac(1, N)} = ${frac(P, N)}. <b>Деление и дробь — одно и то же: a : b = a/b.</b></p>`;
+    },
+  },
+  recipe: {
+    controls: slider('rP', 'Порций (рецепт на 4)', 1, 12, 6),
+    render() {
+      const P = +$('rP').value;
+      $('rPv').textContent = P;
+      const items = [['🌾 Мука', 3, 2, 'стакана'], ['🥛 Молоко', 5, 4, 'стакана'], ['🍬 Сахар', 1, 4, 'стакана'],
+                     ['🧈 Масло', 1, 2, 'ложки'], ['🥚 Яйца', 2, 1, 'шт.']];
+      const rows = items.map(([name, n, d, unit], k) => {
+        const an = n * P, ad = d * 4, amount = an / ad;
+        let cups = '';
+        for (let c = 0; c < Math.ceil(amount); c++) {
+          const fill = Math.min(1, amount - c);
+          cups += `<rect x="${c * 30 + 1}" y="1" width="24" height="36" rx="4" style="fill:var(--empty);stroke:var(--line)"/>` +
+            `<rect class="grow" x="${c * 30 + 1}" y="${1 + 36 * (1 - fill)}" width="24" height="${36 * fill}" rx="4" style="fill:var(--b);animation-delay:${k * 120 + c * 60}ms"/>`;
+        }
+        return `<div class="ing fade"><span>${name}</span><span class="amt">${mixed(an, ad)} <small style="font-size:12px;font-weight:400">${unit}</small></span>
+          <svg viewBox="0 0 ${Math.ceil(amount) * 30} 38" style="width:${Math.ceil(amount) * 30}px">${cups}</svg></div>`;
+      }).join('');
+      $('useOut').innerHTML = `
+        <div class="mid">все количества × ${frac(P, 4, 'var(--a)')}${gcd(P, 4) > 1 ? ' = ' + mixed(P, 4, 'var(--a)') : ''}</div>
+        <div style="margin-top:8px">${rows}</div>
+        <p class="answer">Рецепт написан на 4 порции, а нужно на ${P}. Значит, каждое количество умножаем на ${frac(P, 4)}.
+        Например, мука: ${frac(3, 2)} · ${frac(P, 4)} = ${frac(3 * P, 8)}${gcd(3 * P, 8) > 1 || 3 * P > 8 ? ' = ' + mixed(3 * P, 8) : ''} стакана.
+        ${(2 * P) % 4 ? '<b>Пол-яйца не бывает — округлите 🙂</b>' : ''}</p>`;
+    },
+  },
+  sale: {
+    controls: slider('sPr', 'Цена, ₽', 100, 10000, 2000, 100) +
+      `<label class="r">Скидка<select id="sD" style="grid-column:1/-1">
+        <option value="1/10">10% = 1/10</option><option value="1/5">20% = 1/5</option>
+        <option value="1/4" selected>25% = 1/4</option><option value="1/3">≈33% = 1/3</option>
+        <option value="1/2">50% = 1/2</option><option value="3/4">75% = 3/4</option>
+      </select></label>`,
+    render() {
+      const price = +$('sPr').value, [n, d] = $('sD').value.split('/').map(Number);
+      $('sPrv').textContent = money(price);
+      $('useOut').innerHTML = `
+        <div class="mid">скидка ${frac(n, d, 'var(--a)')} цены → платим ${frac(d - n, d, 'var(--c)')}</div>
+        <svg id="saleSvg" style="margin:12px 0"></svg>
+        ${chips([`скидка: ${money(price)} · ${n}/${d} = ${money((price * n) / d)}`, `к оплате: ${money(price)} · ${d - n}/${d} = ${money((price * (d - n)) / d)}`])}
+        <p class="answer">Цену делим на ${d} равных частей: <b>${n}</b> ${n === 1 ? 'часть' : 'части'} — скидка, ${d - n} — платим.
+        Процент — это дробь со знаменателем 100: ${Math.round((100 * n) / d)}% ≈ ${Math.round((100 * n) / d)}/100${d === 3 ? ' (1/3 точнее, чем 33%)' : ' = ' + n + '/' + d}.</p>`;
+      drawBars($('saleSvg'), d, [{ n: d - n, color: 'var(--c)' }, { n, color: 'var(--a)' }], { h: 60 });
+    },
+  },
+  clock: {
+    controls: slider('cM', 'Минут', 5, 60, 15, 5),
+    render() {
+      const m = +$('cM').value;
+      $('cMv').textContent = m;
+      const C = 100, R = 80, a1 = -Math.PI / 2 + (m / 60) * 2 * Math.PI;
+      const sector = m === 60
+        ? `<circle class="pop" cx="${C}" cy="${C}" r="${R}" style="fill:var(--gold);opacity:.7"/>`
+        : `<path class="pop" d="M${C},${C} L${C},${C - R} A${R},${R} 0 ${m > 30 ? 1 : 0} 1 ${C + R * Math.cos(a1)},${C + R * Math.sin(a1)} Z" style="fill:var(--gold);opacity:.7"/>`;
+      let ticks = '';
+      for (let i = 0; i < 12; i++) {
+        const a = (i * Math.PI) / 6;
+        ticks += `<line x1="${C + 72 * Math.sin(a)}" y1="${C - 72 * Math.cos(a)}" x2="${C + 80 * Math.sin(a)}" y2="${C - 80 * Math.cos(a)}" style="stroke:var(--ink);stroke-width:${i % 3 ? 1.5 : 3}"/>`;
+      }
+      const names = { 15: 'четверть часа', 20: 'треть часа', 30: 'полчаса', 40: 'две трети часа', 45: 'три четверти часа', 60: 'целый час' };
+      const last = this.last ?? m;
+      $('useOut').innerHTML = `
+        <div class="mid">${m} мин = ${frac(m, 60)} часа${gcd(m, 60) > 1 ? ' = ' + mixed(m, 60, 'var(--a)') : ''}</div>
+        <svg viewBox="0 0 200 200" style="max-width:220px;margin:12px auto">
+          <circle cx="${C}" cy="${C}" r="${R}" style="fill:var(--bg);stroke:var(--ink);stroke-width:3"/>
+          ${sector}${ticks}
+          <g class="hand" id="clockHand" style="transform-origin:${C}px ${C}px;transform:rotate(${last * 6}deg)">
+            <line x1="${C}" y1="${C}" x2="${C}" y2="${C - 66}" style="stroke:var(--a);stroke-width:4;stroke-linecap:round"/></g>
+          <circle cx="${C}" cy="${C}" r="5" style="fill:var(--ink)"/>
+        </svg>
+        ${chips([names[m] || `${m} из 60 минут`, `≈ ${fmt(m / 60)} ч`])}
+        <p class="answer">В часе 60 минут, поэтому <b>m минут = m/60 часа</b>. Так решают задачи на скорость:
+        за ${m} мин при скорости 60 км/ч машина проедет 60 · ${frac(m, 60)} = ${m} км.</p>`;
+      requestAnimationFrame(() => requestAnimationFrame(() => { $('clockHand').style.transform = `rotate(${m * 6}deg)`; }));
+      this.last = m;
+    },
+  },
+};
+function buildUse() {
+  const u = USES[useTab];
+  $('useCtl').innerHTML = u.controls;
+  $('useCtl').querySelectorAll('input, select').forEach(i => i.addEventListener('input', () => u.render()));
+  u.render();
+}
+document.querySelectorAll('[data-use]').forEach(b => b.addEventListener('click', () => {
+  useTab = b.dataset.use;
+  document.querySelectorAll('[data-use]').forEach(x => x.classList.toggle('on', x === b));
+  buildUse();
+}));
+
+// ---------- 7. Проверь себя ----------
+let q = {}, score = 0, tries = 0;
+const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = arr => arr[rnd(0, arr.length - 1)];
+function newQuiz() {
+  const story = Math.random() < 0.35;
+  $('qSvg').style.display = story ? 'none' : '';
+  $('qText').style.display = story ? '' : 'none';
+  if (story) {
+    const kind = rnd(0, 2);
+    if (kind === 0) {
+      const P = rnd(1, 4), N = rnd(P + 1, 9);
+      q = { n: P, d: N, text: `🍕 ${P} ${P === 1 ? 'пиццу' : 'пиццы'} разделили поровну на ${N} человек. Какую часть пиццы получит каждый?`,
+            hint: `Деление — это дробь: ${P} : ${N} = ${P}/${N}.` };
+    } else if (kind === 1) {
+      const m = pick([10, 15, 20, 30, 40, 45, 50]);
+      q = { n: m, d: 60, text: `⏱️ Какую часть часа составляют ${m} минут?`, hint: `В часе 60 минут: ${m}/60, можно сократить.` };
+    } else {
+      const p = pick([10, 20, 25, 50, 75]);
+      q = { n: p, d: 100, text: `🏷️ Скидка ${p}%. Какую часть цены вам не придётся платить?`, hint: `${p}% = ${p}/100, можно сократить.` };
+    }
+    $('qText').innerHTML = `<span class="fade" style="display:inline-block">${q.text}</span>`;
+  } else {
+    const d = rnd(2, 10);
+    q = { n: rnd(1, d - 1), d, pie: Math.random() < 0.5 };
+    q.pie ? drawPies($('qSvg'), q.d, [{ n: q.n, color: 'var(--gold)' }])
+          : drawBars($('qSvg'), q.d, [{ n: q.n, color: 'var(--gold)' }], { h: 80 });
+  }
+  $('qN').value = ''; $('qD').value = ''; $('qMsg').textContent = '';
+  $('qN').focus({ preventScroll: true });
+}
+function check() {
+  const n = parseInt($('qN').value, 10), d = parseInt($('qD').value, 10), msg = $('qMsg');
+  if (!d || isNaN(n)) { msg.className = 'bad'; msg.textContent = 'Введите числитель и знаменатель.'; return; }
+  tries++;
+  if (n * q.d === q.n * d) {
+    score++;
+    msg.className = 'ok fade';
+    msg.innerHTML = n === q.n && d === q.d ? 'Верно! 🎉' : `Верно! ${n}/${d} = ${q.n}/${q.d} — это равные дроби.`;
+    setTimeout(newQuiz, 1600);
+  } else {
+    msg.className = 'bad';
+    msg.innerHTML = 'Не совсем. ' + (q.hint || 'Посчитайте все части (это знаменатель) и закрашенные (числитель).');
+    const box = $('qBox'); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+  }
+  $('qScore').textContent = `Счёт: ${score} из ${tries}`;
+}
+$('qCheck').addEventListener('click', check);
+$('qNew').addEventListener('click', newQuiz);
+[$('qN'), $('qD')].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') check(); }));
+
+render1(); render2(); render3(); renderAdd(); renderCmp(); buildUse(); newQuiz();
+$('qScore').textContent = 'Счёт: 0 из 0';
+</script>
+</body>
+</html>
