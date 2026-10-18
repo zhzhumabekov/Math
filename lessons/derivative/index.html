@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Производная в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Производная в движении</h1>
+  <p>Производная — скорость изменения. Она показывает, как быстро растёт или падает величина прямо сейчас, и помогает найти самое большое и самое маленькое значение.</p>
+  <nav>
+    <a href="#s1">1. Мгновенная скорость</a>
+    <a href="#s2">2. Наклон касательной</a>
+    <a href="#s3">3. Правила</a>
+    <a href="#s4">4. Минимум и максимум</a>
+    <a href="#s5">5. Градиентный спуск</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. От средней скорости к мгновенной <small>сжимаем промежуток</small></h2>
+    <p class="lead">Машина разгоняется: путь s = t². Средняя скорость на промежутке — Δs : Δt. Сжимаем промежуток почти до нуля — получаем скорость в один момент. Это и есть производная.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f1"></div>
+        <label class="r">Момент t <b id="t1v"></b><input type="range" id="t1" min="0.5" max="4.5" step="0.1" value="2"></label>
+        <label class="r">Промежуток Δt <b id="d1v"></b><input type="range" id="d1" min="0.05" max="3" step="0.05" value="2.5"></label>
+        <div class="btns"><button class="primary" id="shrink1">Сжать Δt ▶</button></div>
+      </div>
+      <div>
+        <svg id="p1" class="plot"></svg>
+        <div class="info" id="i1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Производная — наклон касательной <small>f'(x) — новая функция</small></h2>
+    <p class="lead">Касательная — прямая, которая «прилегает» к графику в точке. Её наклон k и есть f'(x). Посчитаем наклон в каждой точке — получим график производной.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid">f(x) = x³ : 3 − 3x<br><span style="color:var(--muted);font-size:18px">f'(x) = x² − 3</span></div>
+        <label class="r">Точка x <b id="x2v"></b><input type="range" id="x2" min="-4" max="4" step="0.1" value="-2.5"></label>
+        <div class="mid" id="f2"></div>
+      </div>
+      <div>
+        <svg id="p2" class="plot"></svg>
+        <svg id="p2d" class="plot" style="margin-top:8px"></svg>
+        <div class="info" id="i2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Правила производных <small>почему (x²)' = 2x</small></h2>
+    <p class="lead">Квадрат со стороной x. Увеличим сторону на крошечное dx: площадь вырастет на две полоски x·dx и маленький уголок. Уголок исчезающе мал — остаётся 2x·dx.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Сторона x <b id="x3v"></b><input type="range" id="x3" min="2" max="8" step="0.5" value="5"></label>
+        <label class="r">Прибавка dx <b id="d3v"></b><input type="range" id="d3" min="0.1" max="3" step="0.1" value="2"></label>
+        <div class="mid" id="f3"></div>
+      </div>
+      <div>
+        <svg id="p3" style="max-width:340px;margin:0 auto"></svg>
+        <div class="info" id="i3"></div>
+      </div>
+    </div>
+    <h3>Таблица, которую стоит запомнить</h3>
+    <div class="info">
+      <span class="chip">(c)' = 0 — константа не меняется</span>
+      <span class="chip">(kx + b)' = k — наклон прямой</span>
+      <span class="chip">(x²)' = 2x</span>
+      <span class="chip">(x³)' = 3x²</span>
+      <span class="chip">(xⁿ)' = n·xⁿ⁻¹</span>
+      <span class="chip">(eˣ)' = eˣ</span>
+      <span class="chip">(f + g)' = f' + g'</span>
+      <span class="chip">(c·f)' = c·f'</span>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Минимум и максимум <small>там, где f'(x) = 0</small></h2>
+    <p class="lead">На вершине холма и в низу ямы касательная горизонтальна — производная равна нулю. Слева от максимума функция растёт (f' > 0), справа — падает (f' < 0).</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f4"></div>
+        <label class="r">c в формуле f(x) = x³ : 3 − c·x <b id="c4v"></b><input type="range" id="c4" min="0" max="6" step="0.5" value="4"></label>
+        <div class="btns"><button class="primary" id="go4">Найти экстремумы ▶</button></div>
+      </div>
+      <div>
+        <svg id="p4" class="plot"></svg>
+        <div class="info" id="i4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Градиентный спуск <small>как учатся модели</small></h2>
+    <p class="lead">Ищем минимум ошибки, не видя всего графика. Стоим в точке x, смотрим на производную и шагаем вниз: x ← x − скорость · f'(x). Так обучается почти любая нейросеть.</p>
+    <div class="grid">
+      <div class="ctl">
+        <select id="fn5">
+          <option value="bowl">Ошибка-«чаша»</option>
+          <option value="bumpy">Ошибка с ямками</option>
+        </select>
+        <label class="r">Старт x <b id="st5v"></b><input type="range" id="st5" min="-4" max="9" step="0.5" value="-3"></label>
+        <label class="r">Скорость обучения <b id="l5v"></b><input type="range" id="l5" min="0.05" max="2.2" step="0.05" value="0.3"></label>
+        <div class="btns">
+          <button class="primary" id="step5">Шаг ▶</button>
+          <button id="auto5">Авто ▶▶</button>
+          <button id="reset5">Сначала</button>
+        </div>
+      </div>
+      <div>
+        <svg id="p5" class="plot"></svg>
+        <table id="t5"></table>
+        <p class="answer" id="a5"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужна производная <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Производная нужна в двух случаях: когда важно, <b>как быстро</b> меняется величина прямо сейчас (скорость, темп роста),
+      и когда нужно найти <b>лучшее</b> значение — наибольшую прибыль, наименьший расход, наименьшую ошибку модели.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🚗</div><b>Скорость и ускорение</b>
+        <p>Спидометр показывает производную пути, ускорение — производную скорости.</p>
+        <div class="sign-q">Задачи: скорость в момент, тормозной путь.<br><em>Признак:</em> «в данный момент», «как быстро».</div>
+      </div>
+      <div class="use">
+        <div class="ico">💰</div><b>Бизнес</b>
+        <p>Цена, при которой прибыль наибольшая. Поднимать цену выгодно, пока производная прибыли > 0.</p>
+        <div class="sign-q">Задачи: оптимальная цена, объём закупки.<br><em>Признак:</em> «наибольшая прибыль», «оптимальный».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📦</div><b>Инженерия</b>
+        <p>Коробка наибольшего объёма из листа, банка с наименьшим расходом жести.</p>
+        <div class="sign-q">Задачи: экономия материала, лучшая форма.<br><em>Признак:</em> «наименьший расход», «наибольший объём».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📈</div><b>Темп роста</b>
+        <p>Растут ли продажи быстрее, чем месяц назад? Производная показывает ускорение и замедление.</p>
+        <div class="sign-q">Задачи: где пик эпидемии, когда рост замедлился.<br><em>Признак:</em> «темп», «рост замедлился».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🧪</div><b>Наука</b>
+        <p>Скорость химической реакции, скорость остывания, изменение давления.</p>
+        <div class="sign-q">Задачи: как быстро идёт процесс.<br><em>Признак:</em> «скорость изменения».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🤖</div><b>Машинное обучение</b>
+        <p>Градиентный спуск: модель двигает свои параметры против производной ошибки, пока ошибка не станет минимальной.</p>
+        <div class="sign-q">Задачи: обучить регрессию или нейросеть.<br><em>Признак:</em> «подобрать параметры», «минимизировать ошибку».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="price" class="on">💰 Лучшая цена</button>
+      <button data-use="box">📦 Коробка из листа</button>
+      <button data-use="car">🚗 Спидометр</button>
+      <button data-use="train">🤖 Обучение модели</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Дробную часть — через запятую, отрицательное — со знаком минус.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
