@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Матрицы в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Матрицы в движении</h1>
+  <p>Матрица — прямоугольная таблица чисел. Таблица данных, фотография, расписание, веса нейросети — всё это матрицы.</p>
+  <nav>
+    <a href="#s1">1. Что такое матрица</a>
+    <a href="#s2">2. Сложение</a>
+    <a href="#s3">3. Умножение на число</a>
+    <a href="#s4">4. Транспонирование</a>
+    <a href="#s5">5. Суммы и средние</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое матрица <small>строки, столбцы, элементы</small></h2>
+    <p class="lead">Матрица m × n — это m строк и n столбцов. Элемент a<sub>ij</sub> стоит в строке i и столбце j: сначала строка, потом столбец.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f1"></div>
+        <label class="r">Строк m <b id="m1v"></b><input type="range" id="m1" min="1" max="6" value="3"></label>
+        <label class="r">Столбцов n <b id="n1v"></b><input type="range" id="n1" min="1" max="6" value="4"></label>
+        <label class="r">Строка i <b id="i1v"></b><input type="range" id="i1" min="1" max="3" value="2"></label>
+        <label class="r">Столбец j <b id="j1v"></b><input type="range" id="j1" min="1" max="4" value="3"></label>
+      </div>
+      <div>
+        <div id="mat1"></div>
+        <div class="info" id="info1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Сложение и вычитание <small>клетка с клеткой</small></h2>
+    <p class="lead">Складываем элементы на одинаковых местах: первый с первым, второй со вторым. Поэтому размеры матриц обязаны совпадать.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns">
+          <button class="primary" data-op2="+">A + B ▶</button>
+          <button data-op2="−">A − B ▶</button>
+        </div>
+        <div class="btns">
+          <button id="new2">Новые числа</button>
+          <button id="shape2">B размера 2 × 3</button>
+        </div>
+        <p class="lead" id="note2" style="margin:0"></p>
+      </div>
+      <div>
+        <div class="mrow" id="mat2"></div>
+        <div class="info" id="info2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Умножение на число <small>картинка — тоже матрица</small></h2>
+    <p class="lead">Чёрно-белая картинка — матрица яркостей от 0 (чёрный) до 9 (белый). k · A умножает каждый элемент на k, а A + c прибавляет c к каждому.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f3"></div>
+        <label class="r">k — умножить на <b id="k3v"></b><input type="range" id="k3" min="0" max="2" step="0.25" value="0.5"></label>
+        <label class="r">c — прибавить <b id="c3v"></b><input type="range" id="c3" min="-5" max="5" value="0"></label>
+        <label class="r">Картинка<select id="img3" style="grid-column:1/-1">
+          <option value="smile">🙂 Смайлик</option><option value="heart">❤️ Сердце</option><option value="arrow">⬆️ Стрелка</option></select></label>
+      </div>
+      <div>
+        <div class="two">
+          <div><div class="lead" style="margin:0 0 6px">исходная A</div><div class="pix" id="imgA"></div></div>
+          <div><div class="lead" style="margin:0 0 6px" id="capB"></div><div class="pix" id="imgB"></div></div>
+        </div>
+        <div class="info" id="info3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Транспонирование <small>строки становятся столбцами</small></h2>
+    <p class="lead">Aᵀ — матрица A, «отражённая» относительно главной диагонали. Элемент из строки i, столбца j переезжает в строку j, столбец i. Размер m × n становится n × m.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f4"></div>
+        <label class="r">Строк m <b id="m4v"></b><input type="range" id="m4" min="1" max="5" value="2"></label>
+        <label class="r">Столбцов n <b id="n4v"></b><input type="range" id="n4" min="1" max="5" value="4"></label>
+        <div class="btns"><button class="primary" id="go4">Транспонировать ▶</button></div>
+      </div>
+      <div>
+        <div class="tbox" id="box4"></div>
+        <div class="info" id="info4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Суммы и средние по строкам и столбцам <small>сворачиваем таблицу</small></h2>
+    <p class="lead">Продажи: строки — магазины, столбцы — месяцы. Сумма по строке — итог магазина за все месяцы, сумма по столбцу — итог месяца по всем магазинам.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns" id="agg5">
+          <button data-agg="rows" class="on">Σ по строкам</button>
+          <button data-agg="cols">Σ по столбцам</button>
+          <button data-agg="mean">Среднее по столбцам</button>
+          <button data-agg="all">Σ всего</button>
+        </div>
+        <button id="new5">Новые продажи</button>
+        <div class="mid" id="f5" style="font-size:18px"></div>
+      </div>
+      <div>
+        <div id="mat5"></div>
+        <div class="info" id="info5"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны матрицы <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Матрица нужна, когда данные естественно лежат в таблице: у каждого объекта несколько свойств, у каждой точки картинки — яркость,
+      у каждой пары людей — «дружат или нет». Одна операция над матрицей сразу обрабатывает тысячи чисел.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">📊</div><b>Таблицы данных</b>
+        <p>Строки — объекты (клиенты, квартиры), столбцы — признаки. Это основа Pandas и NumPy.</p>
+        <div class="sign-q">Задачи: посчитать итоги, средние, сравнить.<br><em>Признак:</em> данные в виде таблицы.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🖼️</div><b>Изображения</b>
+        <p>Фото — матрица пикселей (цветное — три матрицы R, G, B). Фильтры — операции над матрицей.</p>
+        <div class="sign-q">Задачи: яркость, контраст, поворот, размытие.<br><em>Признак:</em> «обработать картинку».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏬</div><b>Склад и продажи</b>
+        <p>Магазины × товары: остатки, поставки, продажи. Остаток = было + привезли − продали.</p>
+        <div class="sign-q">Задачи: где кончается товар, итоги по магазинам.<br><em>Признак:</em> «по каждому магазину и товару».</div>
+      </div>
+      <div class="use">
+        <div class="ico">👥</div><b>Сети и связи</b>
+        <p>Матрица смежности: 1 — если двое дружат (или города связаны дорогой).</p>
+        <div class="sign-q">Задачи: сколько друзей, кто самый популярный.<br><em>Признак:</em> «кто с кем связан».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎮</div><b>Игровые поля</b>
+        <p>Шахматы, «Морской бой», карты уровней — матрицы клеток.</p>
+        <div class="sign-q">Задачи: ход, проверка клетки, поиск пути.<br><em>Признак:</em> поле из клеток с координатами.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🤖</div><b>Нейросети</b>
+        <p>Знания нейросети хранятся в матрицах весов — их миллионы чисел.</p>
+        <div class="sign-q">Задачи: обучение и работа моделей.<br><em>Признак:</em> «слой», «веса».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="photo" class="on">🖼️ Фильтры для фото</button>
+      <button data-use="stock">🏬 Склад</button>
+      <button data-use="friends">👥 Кто с кем дружит</button>
+      <button data-use="battle">🎮 Морской бой</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Отрицательное — со знаком минус.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

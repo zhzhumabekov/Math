@@ -13,7 +13,7 @@ const COURSE = [
   ] },
   { title: 'Линейная алгебра', goal: 'понимать, как модели работают с числовыми данными', lessons: [
     { ico: '➡️', name: 'Векторы', about: 'операции с векторами', href: 'lessons/vectors/index.html' },
-    { ico: '🔢', name: 'Матрицы', about: 'операции с матрицами' },
+    { ico: '🔢', name: 'Матрицы', about: 'операции с матрицами', href: 'lessons/matrices/index.html' },
     { ico: '✖️', name: 'Скалярное произведение', about: 'насколько векторы похожи' },
     { ico: '🧮', name: 'Умножение матриц', about: 'строка на столбец' },
     { ico: '📦', name: 'Размерности и формы', about: 'shape массивов' },
