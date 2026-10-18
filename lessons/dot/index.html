@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Скалярное произведение в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Скалярное произведение в движении</h1>
+  <p>Перемножаем векторы по координатам и складываем — получаем одно число. Оно считает чек в магазине, показывает, насколько векторы «смотрят в одну сторону», и лежит внутри каждой нейросети.</p>
+  <nav>
+    <a href="#s1">1. Сумма произведений</a>
+    <a href="#s2">2. Угол и знак</a>
+    <a href="#s3">3. Проекция и работа</a>
+    <a href="#s4">4. Похожесть</a>
+    <a href="#s5">5. Нейрон</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Сумма произведений <small>чек в магазине</small></h2>
+    <p class="lead">Вектор количеств q и вектор цен p. Перемножаем пары «количество × цена» и складываем: q · p = q₁p₁ + q₂p₂ + … Это и есть скалярное произведение.</p>
+    <div class="grid">
+      <div class="ctl" id="ctl1"></div>
+      <div>
+        <div class="receipt" id="rc1"></div>
+        <div class="mid" id="f1" style="margin-top:12px"></div>
+        <div class="info" id="i1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Угол и знак <small>a · b = |a| · |b| · cos θ</small></h2>
+    <p class="lead">Скалярное произведение показывает, насколько векторы смотрят в одну сторону. Острый угол — плюс, прямой — ноль, тупой — минус.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f2"></div>
+        <label class="r">Направление a, ° <b id="ta2v"></b><input type="range" id="ta2" min="0" max="355" step="5" value="20"></label>
+        <label class="r">Направление b, ° <b id="tb2v"></b><input type="range" id="tb2" min="0" max="355" step="5" value="75"></label>
+        <label class="r">Длина b <b id="lb2v"></b><input type="range" id="lb2" min="1" max="6" step="0.5" value="4"></label>
+      </div>
+      <div>
+        <svg id="p2" class="plot" style="max-width:420px;margin:0 auto"></svg>
+        <div class="info" id="i2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Проекция и работа силы <small>полезна только «тень» вдоль пути</small></h2>
+    <p class="lead">Тянем санки верёвкой под углом. Санки едут по земле, поэтому работает только часть силы вдоль пути — её проекция. Работа = F · s = |F| · |s| · cos θ.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f3"></div>
+        <label class="r">Угол верёвки θ, ° <b id="t3v"></b><input type="range" id="t3" min="0" max="180" step="5" value="35"></label>
+        <label class="r">Сила |F|, Н <b id="F3v"></b><input type="range" id="F3" min="10" max="100" step="10" value="60"></label>
+        <div class="btns"><button class="primary" id="go3">Тянуть ▶</button></div>
+      </div>
+      <div>
+        <svg id="p3"></svg>
+        <div class="info" id="i3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Косинусная похожесть <small>у кого похожие вкусы</small></h2>
+    <p class="lead">Вкусы человека — вектор оценок (комедии; боевики). Похожесть двух людей — косинус угла между векторами: a · b, делённое на длины. 1 — вкусы совпадают, 0 — ничего общего.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid">Ваши вкусы</div>
+        <label class="r">Комедии, 0–10 <b id="cx4v"></b><input type="range" id="cx4" min="0" max="10" value="8"></label>
+        <label class="r">Боевики, 0–10 <b id="cy4v"></b><input type="range" id="cy4" min="0" max="10" value="4"></label>
+        <div class="bars" id="b4"></div>
+      </div>
+      <div>
+        <svg id="p4" class="plot" style="max-width:420px;margin:0 auto"></svg>
+        <div class="info" id="i4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Нейрон <small>w · x + b → решение</small></h2>
+    <p class="lead">Искусственный нейрон умножает входы на веса, складывает (то самое скалярное произведение) и прибавляет сдвиг b. Больше нуля — «да», меньше — «нет». Пойдёт ли Петя гулять?</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">☀️ Солнечно, 0–10 <b id="x5_0v"></b><input type="range" id="x5_0" min="0" max="10" value="7"></label>
+        <label class="r">📚 Уроки сделаны, 0–10 <b id="x5_1v"></b><input type="range" id="x5_1" min="0" max="10" value="4"></label>
+        <label class="r">👫 Зовут друзья, 0–10 <b id="x5_2v"></b><input type="range" id="x5_2" min="0" max="10" value="6"></label>
+        <label class="r">Сдвиг b (лень) <b id="b5v"></b><input type="range" id="b5" min="-15" max="0" value="-9"></label>
+      </div>
+      <div>
+        <svg id="p5"></svg>
+        <div class="mid" id="f5"></div>
+        <div class="info" id="i5"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужно скалярное произведение <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Скалярное произведение нужно, когда у каждой части есть свой <b>вес</b>: цена у товара, доля у оценки, важность у признака.
+      И когда надо понять, насколько два набора чисел <b>похожи</b>: вкусы людей, тексты, картинки.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🛒</div><b>Чеки и сметы</b>
+        <p>Количества × цены и сложить. Так считают чек, смету ремонта, стоимость заказа.</p>
+        <div class="sign-q">Задачи: сколько заплатить за набор товаров.<br><em>Признак:</em> «по … штук по … рублей».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎓</div><b>Взвешенная оценка</b>
+        <p>Контрольная важнее домашки: оценки × веса и сложить.</p>
+        <div class="sign-q">Задачи: итоговая оценка, рейтинг.<br><em>Признак:</em> «с весом», «составляет … % итога».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎬</div><b>Рекомендации</b>
+        <p>Вкусы пользователя · жанры фильма = насколько фильм понравится.</p>
+        <div class="sign-q">Задачи: что посоветовать посмотреть, купить.<br><em>Признак:</em> «похожим пользователям понравилось».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🔍</div><b>Поиск</b>
+        <p>Запрос и документ — векторы слов. Чем больше скалярное произведение, тем выше документ в выдаче.</p>
+        <div class="sign-q">Задачи: найти подходящие тексты.<br><em>Признак:</em> «наиболее подходящий».</div>
+      </div>
+      <div class="use">
+        <div class="ico">⚙️</div><b>Физика</b>
+        <p>Работа силы, мощность, поток — везде «полезная часть» вектора.</p>
+        <div class="sign-q">Задачи: работа под углом, освещённость.<br><em>Признак:</em> «сила под углом к движению».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🧠</div><b>Модели и нейросети</b>
+        <p>Линейная регрессия, логистическая регрессия, нейроны — все начинаются с w · x + b.</p>
+        <div class="sign-q">Задачи: прогноз цены, классификация.<br><em>Признак:</em> «у каждого признака свой вес».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="grade" class="on">🎓 Итоговая оценка</button>
+      <button data-use="movies">🎬 Что посмотреть</button>
+      <button data-use="search">🔍 Поиск по текстам</button>
+      <button data-use="price">🏠 Цена квартиры</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Дробную часть — через запятую, отрицательное — со знаком минус.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
