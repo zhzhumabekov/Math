@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Проценты в движении</title>
+<style>
+  :root {
+    --bg: #f6f3ec; --card: #ffffff; --ink: #1f2430; --muted: #6b7280;
+    --line: #ddd6c8; --empty: #eee9de;
+    --a: #e4572e; --b: #2e86ab; --c: #5b9a2f; --gold: #f2a541;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15171c; --card: #1f2229; --ink: #ece9e2; --muted: #9aa0aa;
+            --line: #353a44; --empty: #2b2f38; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  header { max-width: 960px; margin: 0 auto; padding: 32px 16px 8px; }
+  header h1 { margin: 0 0 4px; font-size: clamp(28px, 5vw, 42px); }
+  header p { margin: 0; color: var(--muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  nav a {
+    color: var(--ink); text-decoration: none; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--line); font-size: 14px; background: var(--card);
+  }
+  nav a:hover { border-color: var(--a); }
+  main { max-width: 960px; margin: 0 auto; padding: 8px 16px 64px; }
+  section {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 24px; margin-top: 20px;
+  }
+  h2 { margin: 0 0 4px; font-size: 22px; }
+  h2 small { color: var(--muted); font-weight: 500; font-size: 14px; margin-left: 6px; }
+  h3 { margin: 24px 0 10px; font-size: 18px; }
+  .lead { color: var(--muted); margin: 0 0 16px; }
+  .grid { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: center; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } section { padding: 18px; } }
+
+  /* controls */
+  .ctl { display: grid; gap: 14px; }
+  label.r { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 14px; color: var(--muted); }
+  label.r b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  label.r input { grid-column: 1 / -1; width: 100%; accent-color: var(--a); }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    font: inherit; font-size: 14px; cursor: pointer; padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    transition: transform .1s, border-color .2s;
+  }
+  button:hover { border-color: var(--a); }
+  button:active { transform: scale(.96); }
+  button.on, button.primary { background: var(--a); color: #fff; border-color: var(--a); }
+  select {
+    font: inherit; padding: 8px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--ink); width: 100%;
+  }
+
+  /* typography */
+  .big { font-size: 46px; font-weight: 800; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .mid { font-size: 24px; font-weight: 700; }
+  .frac {
+    display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle;
+    font-weight: 700; line-height: 1.1; margin: 0 .15em; font-size: .8em; font-variant-numeric: tabular-nums;
+  }
+  .frac > span:first-child { border-bottom: .09em solid currentColor; padding: 0 .2em .05em; }
+  .frac > span:last-child { padding: .05em .2em 0; }
+  .info { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .chip.click { cursor: pointer; }
+  .chip.click:hover { border-color: var(--a); }
+  .stage { min-height: 180px; display: grid; place-items: center; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .cell { transition: fill .25s; }
+
+  /* animations */
+  .pop { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both; transform-box: fill-box; transform-origin: center; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .fade { animation: fade .4s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-4px); } }
+  .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1s ease forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .grow { animation: grow .55s cubic-bezier(.3, 1.3, .5, 1) both; transform-box: fill-box; transform-origin: bottom; }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  .growx { animation: growx .6s cubic-bezier(.3, 1.2, .5, 1) both; transform-box: fill-box; transform-origin: left; }
+  @keyframes growx { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .move { transition: transform .6s cubic-bezier(.4, 1.3, .6, 1); }
+
+  /* uses */
+  .uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .use { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; font-size: 14px; }
+  .use .ico { font-size: 28px; }
+  .use b { display: block; font-size: 16px; margin: 4px 0; }
+  .use p { margin: 0 0 8px; color: var(--muted); }
+  .use .sign-q { font-size: 13px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .use .sign-q em { color: var(--a); font-style: normal; font-weight: 600; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .answer { font-size: 15px; margin-top: 10px; }
+  .answer b { color: var(--a); }
+
+  /* quiz */
+  .quiz-in { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .quiz-in input {
+    width: 130px; text-align: center; font: 700 24px system-ui; padding: 6px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  #qTask { font-size: 34px; font-weight: 800; margin-bottom: 14px; }
+  #qMsg { min-height: 28px; font-weight: 600; margin-top: 12px; }
+  .ok { color: var(--c); } .bad { color: var(--a); }
+  .score { margin-left: auto; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Проценты в движении</h1>
+  <p>Процент — это сотая часть. «25%» значит «25 из каждых 100».</p>
+  <nav>
+    <a href="#s1">1. Что такое процент</a>
+    <a href="#s2">2. Три задачи</a>
+    <a href="#s3">3. Повысили и понизили</a>
+    <a href="#s4">4. Проценты на проценты</a>
+    <a href="#s5">5. Пункты и ошибки</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое процент <small>сотая часть целого</small></h2>
+    <p class="lead">Разрежем целое на 100 одинаковых клеток. Одна клетка — 1%, а p% — это p клеток из 100.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="p1Label"></div>
+        <label class="r">Процент p <b id="p1v"></b><input type="range" id="p1" min="0" max="100" value="25"></label>
+        <div class="info" id="p1Quick"></div>
+      </div>
+      <div>
+        <div class="stage"><svg id="p1Svg" style="max-width:300px"></svg></div>
+        <div class="info" id="p1Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Три задачи о процентах <small>одна полоска — три вопроса</small></h2>
+    <p class="lead">В каждой задаче три числа: целое (100%), процент и часть. Два известны — третье находим.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns" id="m2">
+          <button data-m2="part" class="on">Часть</button>
+          <button data-m2="whole">Целое</button>
+          <button data-m2="pct">Процент</button>
+        </div>
+        <label class="r">Целое (100%) <b id="w2v"></b><input type="range" id="w2" min="20" max="1000" step="10" value="400"></label>
+        <label class="r">Процент p <b id="q2v"></b><input type="range" id="q2" min="1" max="100" value="25"></label>
+        <p class="lead" id="p2Ask" style="margin:0"></p>
+      </div>
+      <div>
+        <div class="mid" id="p2Formula"></div>
+        <svg id="p2Svg" style="margin-top:10px"></svg>
+        <div class="info" id="p2Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Повысили и понизили <small>на те же проценты — но не вернулись</small></h2>
+    <p class="lead">Цену подняли на p%, а потом снизили на p%. Кажется, что она вернётся к прежней. Проверим.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Цена, ₽ <b id="s3v"></b><input type="range" id="s3p" min="100" max="10000" step="100" value="1000"></label>
+        <label class="r">На сколько процентов <b id="r3v"></b><input type="range" id="r3" min="5" max="90" value="20"></label>
+        <div class="btns">
+          <button data-o3="up" class="on">Сначала +, потом −</button>
+          <button data-o3="down">Сначала −, потом +</button>
+        </div>
+      </div>
+      <div>
+        <svg id="p3Svg"></svg>
+        <div class="info" id="p3Info"></div>
+        <p class="answer" id="p3Ans"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Проценты на проценты <small>простой и сложный рост</small></h2>
+    <p class="lead">Простые проценты каждый год прибавляют одну и ту же сумму. Сложные считаются от новой суммы, поэтому прибавка с каждым годом растёт.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid">Вклад 100 000 ₽</div>
+        <label class="r">Ставка, % в год <b id="r4v"></b><input type="range" id="r4" min="1" max="30" value="12"></label>
+        <label class="r">Лет <b id="n4v"></b><input type="range" id="n4" min="1" max="30" value="10"></label>
+        <div class="info">
+          <span class="chip" style="border-color:var(--b)">■ простые: + одно и то же</span>
+          <span class="chip" style="border-color:var(--a)">■ сложные: × одно и то же</span>
+        </div>
+      </div>
+      <div>
+        <svg id="p4Svg"></svg>
+        <div class="info" id="p4Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Процентные пункты и частые ошибки <small>«на 5 пунктов» ≠ «на 5%»</small></h2>
+    <p class="lead">Если сравнивают два процента, разницу между ними называют процентными пунктами (п. п.). А относительный рост считают от старого значения.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Было, % <b id="a5v"></b><input type="range" id="a5" min="1" max="60" value="10"></label>
+        <label class="r">Стало, % <b id="b5v"></b><input type="range" id="b5" min="1" max="60" value="15"></label>
+        <div class="mid" id="p5Formula"></div>
+      </div>
+      <div>
+        <svg id="p5Svg"></svg>
+        <div class="info" id="p5Info"></div>
+      </div>
+    </div>
+    <p class="answer">⚠️ Частые ошибки: <b>скидки 20% и 30% подряд — это не 50%</b> (см. раздел 6);
+      вырос на 100% — значит, <b>удвоился</b>; упасть больше чем на 100% нельзя; −50%, потом +50% — это <b>минус 25%</b>.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны проценты <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Проценты нужны, когда надо сравнить части разных целых: 30 из 200 и 45 из 250.
+      Абсолютные числа обманывают, а доля из 100 сравнивается сразу. Так описывают скидки, налоги, рост цен, результаты опросов и качество моделей.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🛒</div><b>Магазин и скидки</b>
+        <p>Цена со скидкой, акции «−30% по карте», наценка продавца.</p>
+        <div class="sign-q">Задачи: сколько заплатить, какая скидка выгоднее.<br><em>Признак:</em> «дешевле на …%», «скидка», «наценка».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏦</div><b>Банк: вклады и кредиты</b>
+        <p>Годовая ставка, ежемесячный платёж, переплата по кредиту.</p>
+        <div class="sign-q">Задачи: сколько будет на вкладе, сколько переплатим.<br><em>Признак:</em> «% годовых», «ставка».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🧾</div><b>Налоги и зарплата</b>
+        <p>Налог в цене товара, подоходный налог, зарплата «на руки».</p>
+        <div class="sign-q">Задачи: сколько налога в чеке, сколько получим.<br><em>Признак:</em> «в том числе НДС», «до вычета налога».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📊</div><b>Опросы и статистика</b>
+        <p>Доли голосов, рост цен (инфляция), изменение показателей за год.</p>
+        <div class="sign-q">Задачи: какая доля «за», на сколько выросли цены.<br><em>Признак:</em> «доля», «выросло на …», «каждый пятый».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📈</div><b>Бизнес-метрики</b>
+        <p>Конверсия сайта, доля вернувшихся клиентов, рост выручки.</p>
+        <div class="sign-q">Задачи: сколько посетителей купят, где теряем клиентов.<br><em>Признак:</em> «из N человек k сделали …».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎯</div><b>Data Science</b>
+        <p>Точность модели, доля пропусков в данных, доля класса в выборке.</p>
+        <div class="sign-q">Задачи: насколько хороша модель, можно ли доверять столбцу.<br><em>Признак:</em> «верно в …% случаев».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="sale" class="on">🛒 Две скидки</button>
+      <button data-use="vat">🧾 Налог в чеке</button>
+      <button data-use="funnel">📈 Воронка продаж</button>
+      <button data-use="spam">🎯 Точность модели</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Знак % и ₽ писать не обязательно.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const num = x => x.toLocaleString('ru-RU');
+const fmt = (x, d = 3) => (+x.toFixed(d)).toLocaleString('ru-RU', { maximumFractionDigits: d });
+const money = x => Math.round(x).toLocaleString('ru-RU') + ' ₽';
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+const frac = (n, d, color) =>
+  `<span class="frac"${color ? ` style="color:${color}"` : ''}><span>${n}</span><span>${d}</span></span>`;
+const chipsHTML = list => list.map(c => `<span class="chip fade">${c}</span>`).join('');
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function style(node, css) { Object.assign(node.style, css); return node; }
+function bindRange(id, onChange) {
+  const input = $(id);
+  input.addEventListener('input', onChange);
+  return () => +input.value;
+}
+const restart = (node, cls) => { node.classList.remove(cls); void node.offsetWidth; node.classList.add(cls); };
+const text = (svg, x, y, s, attrs = {}, color = 'var(--ink)') => {
+  const t = el('text', { x, y, 'font-size': 13, 'text-anchor': 'middle', ...attrs }, svg);
+  t.textContent = s; style(t, { fill: color });
+  return t;
+};
+
+// ---------- 1. Что такое процент ----------
+const p1 = bindRange('p1', render1);
+let prev1 = 0;
+(function build1() {
+  const svg = $('p1Svg');
+  svg.setAttribute('viewBox', '0 0 250 250');
+  for (let i = 0; i < 100; i++) {
+    const c = el('rect', { id: 'c1_' + i, x: (i % 10) * 25 + 1.5, y: Math.floor(i / 10) * 25 + 1.5, width: 22, height: 22, rx: 4 }, svg);
+    style(c, { fill: 'var(--empty)' }).classList.add('cell');
+  }
+})();
+const NAMES = { 1: 'сотая часть', 10: 'десятая часть', 20: 'пятая часть', 25: 'четверть', 50: 'половина', 75: 'три четверти', 100: 'всё целиком' };
+function render1() {
+  const p = p1(), g = gcd(p, 100) || 1;
+  $('p1v').textContent = p + '%';
+  $('p1Label').innerHTML = `${p}% = ${frac(p, 100)} = ${fmt(p / 100, 2)}`;
+  // перекрашиваем только изменившиеся клетки — «волной» от старой границы к новой
+  const lo = Math.min(prev1, p), hi = Math.max(prev1, p);
+  for (let i = lo; i < hi; i++) {
+    const k = p > prev1 ? i - lo : hi - 1 - i;
+    style($('c1_' + i), { transitionDelay: Math.min(k * 10, 600) + 'ms', fill: i < p ? 'var(--a)' : 'var(--empty)' });
+  }
+  prev1 = p;
+  const list = [`${p} клеток из 100`];
+  if (p && g > 1 && p < 100) list.push(`сокращаем: ${p}/100 = ${p / g}/${100 / g}`);
+  if (NAMES[p]) list.push(NAMES[p]);
+  list.push(`чтобы найти ${p}% от числа, умножьте его на ${fmt(p / 100, 2)}`);
+  $('p1Info').innerHTML = chipsHTML(list);
+  $('p1Quick').innerHTML = [1, 5, 10, 20, 25, 50, 75, 100]
+    .map(v => `<span class="chip click" data-p="${v}" style="${v === p ? 'border-color:var(--a)' : ''}">${v}%</span>`).join('');
+  $('p1Quick').querySelectorAll('[data-p]').forEach(c => c.onclick = () => { $('p1').value = c.dataset.p; render1(); });
+}
+
+// ---------- 2. Три задачи ----------
+let mode2 = 'part';
+const w2 = bindRange('w2', render2), q2 = bindRange('q2', render2);
+const X2 = v => 20 + v * 5.2; // v — проценты от 0 до 100
+(function build2() {
+  const svg = $('p2Svg');
+  svg.setAttribute('viewBox', '0 0 560 130');
+  style(el('rect', { x: 20, y: 40, width: 520, height: 36, rx: 6 }, svg), { fill: 'var(--empty)' });
+  const bar = el('rect', { id: 'bar2', x: 20, y: 40, width: 520, height: 36 }, svg);
+  style(bar, { fill: 'var(--a)', transformBox: 'fill-box', transformOrigin: 'left', transform: 'scaleX(0)' }).classList.add('move');
+  for (let v = 0; v <= 100; v += 10) {
+    style(el('line', { x1: X2(v), y1: 76, x2: X2(v), y2: v % 50 ? 82 : 86 }, svg), { stroke: 'var(--muted)' });
+    text(svg, X2(v), 100, v + '%', { 'font-size': 11 }, 'var(--muted)');
+  }
+  const g = el('g', { id: 'lbl2' }, svg); g.classList.add('move');
+  style(el('path', { d: 'M0,40 l-5,-8 h10 z' }, g), { fill: 'var(--ink)' });
+  text(g, 0, 24, '', { id: 'lbl2t', 'font-weight': 700, 'font-size': 14 });
+  text(svg, 280, 124, '', { id: 'whole2t', 'font-weight': 700, 'font-size': 14 });
+})();
+const ASK2 = {
+  part: 'Известны целое и процент. <b>Найти часть.</b>',
+  whole: 'Известны часть и её процент. <b>Найти целое.</b>',
+  pct: 'Известны часть и целое. <b>Найти, какой это процент.</b>',
+};
+function render2() {
+  const W = w2(), p = q2(), P = W * p / 100;
+  $('w2v').textContent = num(W); $('q2v').textContent = p + '%';
+  $('p2Ask').innerHTML = ASK2[mode2];
+  const A = s => `<span style="color:var(--a)">${s}</span>`;
+  let f, chips;
+  if (mode2 === 'part') {
+    f = `${p}% от ${num(W)} = ${num(W)} · ${fmt(p / 100, 2)} = ${A(fmt(P, 2))}`;
+    chips = [`1% = ${num(W)} : 100 = ${fmt(W / 100, 2)}`, `${p}% = ${fmt(W / 100, 2)} · ${p} = ${fmt(P, 2)}`];
+  } else if (mode2 === 'whole') {
+    f = `${fmt(P, 2)} : ${fmt(p / 100, 2)} = ${A(num(W))}`;
+    chips = [`${p}% — это ${fmt(P, 2)}`, `1% = ${fmt(P, 2)} : ${p} = ${fmt(P / p, 3)}`, `100% = ${fmt(P / p, 3)} · 100 = ${num(W)}`];
+  } else {
+    f = `${fmt(P, 2)} : ${num(W)} · 100% = ${A(p + '%')}`;
+    chips = [`${fmt(P, 2)} : ${num(W)} = ${fmt(P / W, 4)}`, `доля × 100 = проценты`];
+  }
+  $('p2Formula').innerHTML = `<span class="fade" style="display:inline-block">${f}</span>`;
+  $('p2Info').innerHTML = chipsHTML(chips);
+  $('bar2').style.transform = `scaleX(${p / 100})`;
+  $('lbl2').style.transform = `translate(${X2(p)}px, 0)`;
+  $('lbl2t').textContent = mode2 === 'part' ? `часть = ?` : mode2 === 'pct' ? `${fmt(P, 2)} — это ?%` : `${p}% = ${fmt(P, 2)}`;
+  $('whole2t').textContent = mode2 === 'whole' ? 'целое (100%) = ?' : `целое (100%) = ${num(W)}`;
+}
+document.querySelectorAll('[data-m2]').forEach(b => b.onclick = () => {
+  mode2 = b.dataset.m2;
+  document.querySelectorAll('[data-m2]').forEach(x => x.classList.toggle('on', x === b));
+  render2();
+});
+
+// ---------- 3. Повысили и понизили ----------
+let order3 = 'up';
+const s3 = bindRange('s3p', render3), r3 = bindRange('r3', render3);
+const BASE3 = 240;
+(function build3() {
+  const svg = $('p3Svg');
+  svg.setAttribute('viewBox', '0 0 560 270');
+  style(el('line', { x1: 10, y1: BASE3, x2: 550, y2: BASE3 }, svg), { stroke: 'var(--ink)', strokeWidth: 2 });
+  style(el('line', { id: 'ref3', x1: 10, y1: BASE3 - 100, x2: 550, y2: BASE3 - 100, 'stroke-dasharray': '6 5' }, svg), { stroke: 'var(--muted)' });
+  ['var(--b)', 'var(--gold)', 'var(--a)'].forEach((color, i) => {
+    const x = 40 + i * 180;
+    const bar = el('rect', { id: 'bar3_' + i, x, y: BASE3 - 100, width: 120, height: 100, rx: 4 }, svg);
+    style(bar, { fill: color, transformBox: 'fill-box', transformOrigin: 'bottom' }).classList.add('move');
+    const g = el('g', { id: 'lbl3_' + i }, svg); g.classList.add('move');
+    text(g, x + 60, -8, '', { id: 'val3_' + i, 'font-weight': 700, 'font-size': 15 });
+    text(svg, x + 60, BASE3 + 20, '', { id: 'cap3_' + i, 'font-size': 13 }, 'var(--muted)');
+  });
+})();
+function render3() {
+  const S = s3(), p = r3(), up = 1 + p / 100, down = 1 - p / 100;
+  $('s3v').textContent = num(S); $('r3v').textContent = p + '%';
+  const k = order3 === 'up' ? [1, up, up * down] : [1, down, down * up];
+  const caps = order3 === 'up' ? ['было', `+${p}%`, `затем −${p}%`] : ['было', `−${p}%`, `затем +${p}%`];
+  k.forEach((v, i) => {
+    $('bar3_' + i).style.transform = `scaleY(${v})`;
+    $('lbl3_' + i).style.transform = `translate(0, ${BASE3 - 100 * v}px)`;
+    $('val3_' + i).textContent = money(S * v);
+    $('cap3_' + i).textContent = caps[i];
+  });
+  const mid = S * k[1];
+  $('p3Info').innerHTML = chipsHTML([`× ${fmt(up, 2)} и × ${fmt(down, 2)}`, `${fmt(up, 2)} · ${fmt(down, 2)} = ${fmt(up * down, 4)}`,
+    `итог: −${fmt(p * p / 100, 2)}% от начальной цены`]);
+  $('p3Ans').innerHTML = `Второй процент считается <b>уже от другой суммы</b> — от ${money(mid)}, а не от ${money(S)}.
+    Поэтому «+${p}%, потом −${p}%» дают <b>−${fmt(p * p / 100, 2)}%</b>. Порядок не важен: множители просто меняются местами.`;
+}
+document.querySelectorAll('[data-o3]').forEach(b => b.onclick = () => {
+  order3 = b.dataset.o3;
+  document.querySelectorAll('[data-o3]').forEach(x => x.classList.toggle('on', x === b));
+  render3();
+});
+
+// ---------- 4. Проценты на проценты ----------
+const r4 = bindRange('r4', render4), n4 = bindRange('n4', render4);
+function render4() {
+  const r = r4(), n = n4(), S = 100000;
+  $('r4v').textContent = r + '%'; $('n4v').textContent = n;
+  const simple = y => S * (1 + r * y / 100), comp = y => S * (1 + r / 100) ** y;
+  const max = comp(n), W = 560, H = 230, bw = (W - 40) / (n + 1);
+  const svg = $('p4Svg'); svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${W} ${H + 30}`);
+  const Y = v => (v / max) * (H - 20);
+  for (let y = 0; y <= n; y++) {
+    const x = 30 + y * bw, d = Math.min(y * 40, 1200) + 'ms';
+    style(el('rect', { x: x + bw * .08, y: H - Y(comp(y)), width: bw * .4, height: Y(comp(y)), rx: 2 }, svg),
+      { fill: 'var(--a)', animationDelay: d }).classList.add('grow');
+    style(el('rect', { x: x + bw * .5, y: H - Y(simple(y)), width: bw * .4, height: Y(simple(y)), rx: 2 }, svg),
+      { fill: 'var(--b)', animationDelay: d }).classList.add('grow');
+    if (n <= 12 || y % 5 === 0) text(svg, x + bw / 2, H + 16, y, { 'font-size': 11 }, 'var(--muted)');
+  }
+  style(el('line', { x1: 20, y1: H, x2: W, y2: H }, svg), { stroke: 'var(--ink)' });
+  text(svg, W - 10, H + 28, 'годы', { 'text-anchor': 'end', 'font-size': 11 }, 'var(--muted)');
+  $('p4Info').innerHTML = chipsHTML([
+    `простые: 100 000 + ${n} · ${num(S * r / 100)} = ${money(simple(n))}`,
+    `сложные: 100 000 · ${fmt(1 + r / 100, 2)}<sup>${n}</sup> = ${money(comp(n))}`,
+    `разница: ${money(comp(n) - simple(n))}`,
+    `правило 72: деньги удвоятся примерно за 72 : ${r} ≈ ${fmt(72 / r, 1)} лет`]);
+}
+
+// ---------- 5. Процентные пункты ----------
+const a5 = bindRange('a5', render5), b5 = bindRange('b5', render5);
+(function build5() {
+  const svg = $('p5Svg');
+  svg.setAttribute('viewBox', '0 0 540 285');
+  [0, 1].forEach(g => {
+    for (let i = 0; i < 100; i++) {
+      const c = el('rect', { id: `c5_${g}_${i}`, x: g * 290 + (i % 10) * 25, y: Math.floor(i / 10) * 25, width: 22, height: 22, rx: 4 }, svg);
+      style(c, { fill: 'var(--empty)' }).classList.add('cell');
+    }
+    text(svg, g * 290 + 124, 274, g ? 'стало' : 'было', { 'font-weight': 700 });
+  });
+})();
+function render5() {
+  const a = a5(), b = b5(), d = b - a, rel = d / a * 100;
+  $('a5v').textContent = a + '%'; $('b5v').textContent = b + '%';
+  for (let i = 0; i < 100; i++) {
+    style($('c5_0_' + i), { fill: i < a ? 'var(--b)' : 'var(--empty)', opacity: 1 });
+    const cell = $('c5_1_' + i);
+    if (i < Math.min(a, b)) style(cell, { fill: 'var(--b)', opacity: 1 });
+    else if (i < b) style(cell, { fill: 'var(--gold)', opacity: 1 });
+    else if (i < a) style(cell, { fill: 'var(--a)', opacity: .35 });
+    else style(cell, { fill: 'var(--empty)', opacity: 1 });
+  }
+  const sign = x => (x > 0 ? '+' : x < 0 ? '−' : '') + fmt(Math.abs(x), 1);
+  $('p5Formula').innerHTML = `<span class="fade" style="display:inline-block">${sign(d)} п. п.<br>
+    <span style="color:var(--a)">${sign(rel)}%</span></span>`;
+  $('p5Info').innerHTML = chipsHTML([
+    `${b}% − ${a}% = ${sign(d)} процентных пункта`,
+    `(${b} − ${a}) : ${a} · 100% = ${sign(rel)}%`,
+    d > 0 ? `жёлтых клеток ${d} — это ${fmt(rel, 1)}% от ${a} синих` : d < 0 ? `потеряно ${-d} клеток из ${a}` : 'ничего не изменилось']);
+}
+
+// ---------- 6. Зачем нужны проценты ----------
+const slider = (id, label, min, max, val, step = 1) =>
+  `<label class="r">${label} <b id="${id}v"></b><input type="range" id="${id}" min="${min}" max="${max}" value="${val}" step="${step}"></label>`;
+let useTab = 'sale';
+const USES = {
+  sale: {
+    controls: slider('dP', 'Цена, ₽', 500, 20000, 5000, 500) + slider('d1', 'Скидка в магазине, %', 5, 70, 20) +
+              slider('d2', 'Ещё скидка по карте, %', 5, 70, 30),
+    render() {
+      const P = +$('dP').value, d1 = +$('d1').value, d2 = +$('d2').value;
+      $('dPv').textContent = num(P); $('d1v').textContent = d1 + '%'; $('d2v').textContent = d2 + '%';
+      const P1 = P * (1 - d1 / 100), P2 = P1 * (1 - d2 / 100), total = (1 - P2 / P) * 100, naive = d1 + d2;
+      const X = v => (v / P) * 400;
+      const rows = [[P, 'цена', 'var(--b)'], [P1, `−${d1}%`, 'var(--gold)'], [P2, `−${d2}% от ${money(P1)}`, 'var(--a)']];
+      $('useOut').innerHTML = `
+        <div class="mid">${money(P)} · ${fmt(1 - d1 / 100, 2)} · ${fmt(1 - d2 / 100, 2)} = <span style="color:var(--a)">${money(P2)}</span></div>
+        <svg viewBox="0 0 560 170" style="margin-top:10px">
+          ${rows.map(([v, cap, c], i) => `
+            <rect class="growx" x="0" y="${i * 50}" width="${X(v)}" height="34" rx="5" style="fill:${c};animation-delay:${i * 450}ms"/>
+            <text class="fade" x="${X(v) + 8}" y="${i * 50 + 22}" font-size="14" style="fill:var(--ink);animation-delay:${i * 450 + 300}ms"><tspan font-weight="700">${money(v)}</tspan> ${cap}</text>`).join('')}
+          ${naive < 100 ? `<line class="fade" x1="${X(P * (1 - naive / 100))}" y1="90" x2="${X(P * (1 - naive / 100))}" y2="140" style="stroke:var(--ink);stroke-width:2;stroke-dasharray:4 4;animation-delay:1.2s"/>
+            <text class="fade" x="${X(P * (1 - naive / 100))}" y="160" font-size="12" text-anchor="middle" style="fill:var(--muted);animation-delay:1.2s">если бы −${naive}%</text>` : ''}
+        </svg>
+        <div class="info">${chipsHTML([`итоговая скидка ${fmt(total, 1)}%, а не ${naive}%`, `вторая скидка считается от ${money(P1)}`,
+          `формула: 1 − ${fmt(1 - d1 / 100, 2)} · ${fmt(1 - d2 / 100, 2)} = ${fmt(total / 100, 3)}`])}</div>
+        <p class="answer">Скидки подряд <b>умножаются, а не складываются</b>: после первой скидки цена уже меньше, и вторая
+        «откусывает» процент от меньшей суммы. Поэтому «−${d1}% и ещё −${d2}%» выгоднее для магазина, чем кажется покупателю.</p>`;
+    },
+  },
+  vat: {
+    controls: slider('vP', 'Цена в чеке (с налогом), ₽', 120, 12000, 1200, 60) +
+      `<label class="r">Ставка налога<select id="vR" style="grid-column:1/-1">
+         <option value="20">20%</option><option value="10">10%</option><option value="22">22%</option></select></label>`,
+    render() {
+      const P = +$('vP').value, r = +$('vR').value, tax = P * r / (100 + r), base = P - tax;
+      $('vPv').textContent = num(P);
+      const W = 520, xb = W * 100 / (100 + r);
+      $('useOut').innerHTML = `
+        <div class="mid">налог = ${num(P)} · ${r} : ${100 + r} = <span style="color:var(--a)">${money(tax)}</span></div>
+        <svg viewBox="0 0 540 110" style="margin-top:10px">
+          <rect class="growx" x="10" y="20" width="${xb}" height="40" rx="5" style="fill:var(--b)"/>
+          <rect class="growx" x="${10 + xb}" y="20" width="${W - xb}" height="40" rx="5" style="fill:var(--a);animation-delay:.5s"/>
+          <text class="fade" x="${10 + xb / 2}" y="46" text-anchor="middle" font-size="14" font-weight="700" style="fill:#fff">100% — ${money(base)}</text>
+          <text class="fade" x="${10 + xb + (W - xb) / 2}" y="85" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--a);animation-delay:.8s">${r}%</text>
+          <text x="${10 + W / 2}" y="105" text-anchor="middle" font-size="13" style="fill:var(--muted)">в чеке: ${100 + r}% = ${money(P)}</text>
+        </svg>
+        <div class="info">${chipsHTML([`без налога: ${money(base)}`, `проверка: ${money(base)} · ${fmt(1 + r / 100, 2)} = ${money(P)}`,
+          `ошибка: ${num(P)} · ${r}% = ${money(P * r / 100)} — это не налог`])}</div>
+        <p class="answer">Налог начисляют <b>на цену без налога</b>, поэтому цена в чеке — это ${100 + r}%, а не 100%.
+        Чтобы найти налог, делим чек на ${100 + r} частей и берём ${r} из них.</p>`;
+    },
+  },
+  funnel: {
+    controls: slider('fV', 'Посетителей сайта', 1000, 100000, 10000, 1000) +
+              slider('fC', 'Положили товар в корзину, %', 1, 60, 20) + slider('fB', 'Из корзины оплатили, %', 1, 100, 40),
+    render() {
+      const V = +$('fV').value, c = +$('fC').value, b = +$('fB').value, C = V * c / 100, B = C * b / 100, total = c * b / 100;
+      $('fVv').textContent = num(V); $('fCv').textContent = c + '%'; $('fBv').textContent = b + '%';
+      const W = 520, w = v => Math.max(4, W * v / V);
+      const rows = [[V, 'зашли на сайт', 'var(--b)'], [C, `в корзине (${c}%)`, 'var(--gold)'], [B, `оплатили (${b}% от корзины)`, 'var(--c)']];
+      $('useOut').innerHTML = `
+        <div class="mid">${c}% · ${b}% = <span style="color:var(--a)">${fmt(total, 2)}%</span> посетителей покупают</div>
+        <svg viewBox="0 0 540 170" style="margin-top:10px">
+          ${rows.map(([v, cap, col], i) => `
+            <rect class="pop" x="${10 + (W - w(v)) / 2}" y="${i * 56}" width="${w(v)}" height="36" rx="6" style="fill:${col};animation-delay:${i * 400}ms"/>
+            <text class="fade" x="${10 + W / 2}" y="${i * 56 + 52}" text-anchor="middle" font-size="13" style="fill:var(--ink);animation-delay:${i * 400 + 200}ms"><tspan font-weight="700">${num(Math.round(v))}</tspan> — ${cap}</text>`).join('')}
+        </svg>
+        <div class="info">${chipsHTML([`конверсия = ${num(Math.round(B))} : ${num(V)} = ${fmt(total, 2)}%`,
+          `+5 п. п. к корзине → ${num(Math.round(V * Math.min(c + 5, 100) / 100 * b / 100))} покупок вместо ${num(Math.round(B))}`])}</div>
+        <p class="answer">Доли на каждом шаге <b>перемножаются</b>. Аналитик смотрит, на каком шаге теряется больше всего людей,
+        и улучшает именно его. Конверсия — один из самых частых процентов в работе с данными.</p>`;
+    },
+  },
+  spam: {
+    controls: slider('sS', 'Спама среди 100 писем, %', 1, 50, 10) + slider('sR', 'Сколько спама ловит модель, %', 0, 100, 0) +
+      `<div class="info"><span class="chip click" data-r="0">ленивая модель: 0%</span><span class="chip click" data-r="80">хорошая: 80%</span></div>`,
+    render() {
+      const s = +$('sS').value, r = +$('sR').value, caught = Math.round(s * r / 100), right = 100 - s + caught;
+      $('sSv').textContent = s + '%'; $('sRv').textContent = r + '%';
+      let cells = '';
+      for (let i = 0; i < 100; i++) {
+        const isSpam = i < s, ok = !isSpam || i < caught;
+        const fill = !isSpam ? 'var(--empty)' : ok ? 'var(--c)' : 'var(--a)';
+        cells += `<rect class="pop" x="${(i % 10) * 25}" y="${Math.floor(i / 10) * 25}" width="22" height="22" rx="4" style="fill:${fill};animation-delay:${Math.min(i * 8, 800)}ms"/>`;
+        if (isSpam) cells += `<text x="${(i % 10) * 25 + 11}" y="${Math.floor(i / 10) * 25 + 16}" text-anchor="middle" font-size="12" style="fill:#fff">${ok ? '✓' : '✗'}</text>`;
+      }
+      $('useOut').innerHTML = `
+        <div class="mid">точность = ${right} : 100 = <span style="color:var(--a)">${right}%</span></div>
+        <svg viewBox="0 0 250 250" style="max-width:260px;margin:10px auto">${cells}</svg>
+        <div class="info">${chipsHTML([`поймано ${caught} из ${s} спам-писем`, `пропущено ${s - caught}`, `обычные письма модель не трогает — они верны`])}</div>
+        <p class="answer">Модель, которая <b>вообще не ищет спам</b>, всё равно верна в ${100 - s}% случаев: обычных писем большинство.
+        Поэтому одного общего процента мало — смотрят ещё долю пойманного спама. Подробнее — в теме про метрики.</p>`;
+      $('useCtl').querySelectorAll('[data-r]').forEach(c => c.onclick = () => { $('sR').value = c.dataset.r; USES.spam.render(); });
+    },
+  },
+};
+function buildUse() {
+  const u = USES[useTab];
+  $('useCtl').innerHTML = u.controls;
+  $('useCtl').querySelectorAll('input, select').forEach(i => i.addEventListener('input', () => u.render()));
+  u.render();
+}
+document.querySelectorAll('[data-use]').forEach(b => b.addEventListener('click', () => {
+  useTab = b.dataset.use;
+  document.querySelectorAll('[data-use]').forEach(x => x.classList.toggle('on', x === b));
+  buildUse();
+}));
+
+// ---------- 7. Проверь себя ----------
+let q = {}, score = 0, tries = 0;
+const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = arr => arr[rnd(0, arr.length - 1)];
+const story = t => `<span style="font-size:20px;font-weight:600">${t}</span>`;
+// число, у которого p% — целое: кратно 100 / НОД(p, 100)
+const wholeFor = (p, maxK) => (100 / gcd(p, 100)) * rnd(1, maxK);
+function newQuiz() {
+  const type = rnd(0, 6);
+  if (type === 0) {
+    const p = pick([5, 10, 15, 20, 25, 30, 50, 75]), N = wholeFor(p, 20);
+    q = { text: `${p}% от ${num(N)} = ?`, ans: N * p / 100, hint: `1% от ${num(N)} = ${fmt(N / 100)}, а ${p}% — в ${p} раз больше.` };
+  } else if (type === 1) {
+    const p = pick([5, 10, 20, 25, 40, 50]), W = wholeFor(p, 15), P = W * p / 100;
+    q = { text: `${p}% числа — это ${num(P)}. Чему равно число?`, ans: W, hint: `1% = ${num(P)} : ${p} = ${fmt(P / p)}, а 100% — в 100 раз больше.` };
+  } else if (type === 2) {
+    const p = pick([10, 20, 25, 40, 50, 60, 75, 80]), b = wholeFor(p, 10), a = b * p / 100;
+    q = { text: `${a} от ${b} — это сколько процентов?`, ans: p, hint: `${a} : ${b} = ${fmt(a / b, 2)}. Умножьте на 100.` };
+  } else if (type === 3) {
+    const N = rnd(5, 60) * 100, p = pick([5, 10, 15, 20, 25, 30, 50]), up = Math.random() < .5;
+    q = up
+      ? { text: story(`📈 Товар стоил ${num(N)} ₽ и подорожал на ${p}%. Сколько он стоит теперь (₽)?`), ans: N * (100 + p) / 100,
+          hint: `Новая цена — это ${100 + p}% от старой: ${num(N)} · ${fmt(1 + p / 100, 2)}.` }
+      : { text: story(`🛒 Куртка стоит ${num(N)} ₽, скидка ${p}%. Сколько нужно заплатить (₽)?`), ans: N * (100 - p) / 100,
+          hint: `Платим ${100 - p}% цены: ${num(N)} · ${fmt(1 - p / 100, 2)}.` };
+  } else if (type === 4) {
+    const [a, b] = pick([[10, 15], [20, 25], [4, 6], [5, 8], [10, 12], [20, 30], [8, 10], [25, 20], [10, 8]]), rel = (b - a) / a * 100;
+    q = { text: story(`🏦 Ставка была ${a}%, стала ${b}%. На сколько процентов (не пунктов!) она изменилась? Падение — со знаком минус.`), ans: rel,
+          hint: `Изменение — ${b - a} п. п. Делим на старое значение: ${b - a} : ${a} · 100%.` };
+  } else if (type === 5) {
+    const V = pick([200, 400, 500, 1000, 2000, 2500]), p = pick([1, 2, 4, 5, 10, 20]), k = V * p / 100;
+    q = { text: story(`📈 Сайт посетили ${num(V)} человек, купили ${k}. Какая конверсия (%)?`), ans: p, hint: `${k} : ${num(V)} · 100%.` };
+  } else {
+    const base = rnd(1, 40) * 50, price = base * 1.2, tax = base * 0.2;
+    q = { text: story(`🧾 Цена с налогом 20% — ${num(price)} ₽. Сколько в ней налога (₽)?`), ans: tax,
+          hint: `Цена в чеке — это 120%. Налог = ${num(price)} · 20 : 120.` };
+  }
+  $('qTask').innerHTML = `<span class="fade" style="display:inline-block">${q.text}</span>`;
+  $('qIn').value = ''; $('qMsg').textContent = '';
+}
+function check() {
+  const raw = $('qIn').value.replace(/[\s%₽]/g, '').replace(',', '.').replace('−', '-');
+  const v = parseFloat(raw), msg = $('qMsg');
+  if (isNaN(v)) { msg.className = 'bad'; msg.textContent = 'Введите число.'; return; }
+  tries++;
+  if (Math.abs(v - q.ans) < 0.01) {
+    score++; msg.className = 'ok fade'; msg.textContent = 'Верно! 🎉';
+    setTimeout(newQuiz, 1300);
+  } else {
+    msg.className = 'bad'; msg.innerHTML = 'Не совсем. ' + q.hint;
+    restart($('qBox'), 'shake');
+  }
+  $('qScore').textContent = `Счёт: ${score} из ${tries}`;
+}
+$('qCheck').onclick = check;
+$('qNew').onclick = newQuiz;
+$('qIn').addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+
+render1(); render2(); render3(); render4(); render5(); buildUse(); newQuiz();
+$('qScore').textContent = 'Счёт: 0 из 0';
+</script>
+</body>
+</html>
