@@ -22,6 +22,8 @@
   header { max-width: 960px; margin: 0 auto; padding: 32px 16px 8px; }
   header h1 { margin: 0 0 4px; font-size: clamp(28px, 5vw, 42px); }
   header p { margin: 0; color: var(--muted); }
+  .home { display: inline-block; margin-bottom: 8px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .home:hover { color: var(--a); }
   nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   nav a {
     color: var(--ink); text-decoration: none; padding: 6px 12px; border-radius: 999px;
@@ -117,6 +119,7 @@
 </head>
 <body>
 <header>
+  <a class="home" href="../index.html">← Все уроки</a>
   <h1>Проценты в движении</h1>
   <p>Процент — это сотая часть. «25%» значит «25 из каждых 100».</p>
   <nav>
