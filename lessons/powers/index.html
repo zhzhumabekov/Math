@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Степени в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Степени в движении</h1>
+  <p>Степень — это короткая запись многократного умножения. Двигайте ползунки и смотрите.</p>
+  <nav>
+    <a href="#s1">1. Что такое степень</a>
+    <a href="#s2">2. Удвоение</a>
+    <a href="#s3">3. Свойства</a>
+    <a href="#s4">4. Ноль и минус</a>
+    <a href="#s5">5. Кто быстрее</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое степень <small>повторное умножение</small></h2>
+    <p class="lead">Основание — какое число умножаем. Показатель — сколько раз оно повторяется множителем.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="p1Label"></div>
+        <label class="r">Основание a <b id="a1v"></b><input type="range" id="a1" min="1" max="10" value="3"></label>
+        <label class="r">Показатель n <b id="n1v"></b><input type="range" id="n1" min="0" max="6" value="3"></label>
+      </div>
+      <div>
+        <div class="chain" id="p1Chain"></div>
+        <div class="stage"><svg id="p1Svg"></svg></div>
+        <div class="info" id="p1Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Удвоение <small>складываем лист бумаги</small></h2>
+    <p class="lead">Каждый сгиб удваивает число слоёв. После n сгибов слоёв 2<sup>n</sup>.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="p2Label"></div>
+        <label class="r">Сгибов n <b id="n2v"></b><input type="range" id="n2" min="0" max="10" value="4"></label>
+        <div class="btns"><button id="moon">А если 42 раза?</button></div>
+      </div>
+      <div>
+        <div class="stage"><svg id="p2Svg"></svg></div>
+        <div class="info" id="p2Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Свойства степеней <small>почему показатели складываются</small></h2>
+    <p class="lead">Распишите степени как умножение, и правило становится очевидным.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns" id="ruleBtns">
+          <button data-rule="mul" class="on">a<sup>m</sup> · a<sup>n</sup></button>
+          <button data-rule="div">a<sup>m</sup> : a<sup>n</sup></button>
+          <button data-rule="pow">(a<sup>m</sup>)<sup>n</sup></button>
+        </div>
+        <label class="r">Основание a <b id="a3v"></b><input type="range" id="a3" min="2" max="9" value="2"></label>
+        <label class="r">m <b id="m3v"></b><input type="range" id="m3" min="1" max="6" value="3"></label>
+        <label class="r">n <b id="n3v"></b><input type="range" id="n3" min="1" max="5" value="2"></label>
+        <div class="btns"><button class="primary" id="ruleGo">Показать ▶</button></div>
+      </div>
+      <div>
+        <div class="rule-rows" id="ruleStage"></div>
+        <div class="formula" id="ruleFormula"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Нулевая и отрицательная степень <small>лестница вниз</small></h2>
+    <p class="lead">Уменьшаем показатель на 1 — делим на a. Продолжаем за ноль, и всё получается само.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Основание a <b id="a4v"></b><input type="range" id="a4" min="2" max="10" value="2"></label>
+        <div class="btns">
+          <button class="primary" id="down">Шаг вниз ÷a</button>
+          <button id="reset4">Сначала</button>
+        </div>
+        <p class="lead" id="p4Note" style="margin:0"></p>
+      </div>
+      <div class="stairs" id="stairs"></div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Кто растёт быстрее <small>10·n, n² или 2ⁿ</small></h2>
+    <p class="lead">Сначала степень отстаёт, но потом обгоняет всех.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">n до <b id="n5v"></b><input type="range" id="n5" min="2" max="14" value="10"></label>
+        <table id="p5Table"></table>
+      </div>
+      <div>
+        <svg id="p5Svg"></svg>
+        <div class="legend">
+          <span><i style="background:var(--c)"></i>10·n</span>
+          <span><i style="background:var(--b)"></i>n²</span>
+          <span><i style="background:var(--a)"></i>2ⁿ</span>
+        </div>
+        <p class="lead" id="p5Note" style="margin:8px 0 0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны степени <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Степень нужна везде, где одно и то же действие «умножить на a» повторяется много раз.
+      Вместо 2·2·2·2·2·2·2·2·2·2 пишут 2<sup>10</sup>: короче, понятнее и проще считать.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">📐</div><b>Площадь и объём</b>
+        <p>Площадь квадрата — a², объём куба — a³. Отсюда «квадратные метры» (м²) и «кубические сантиметры» (см³).</p>
+        <div class="sign-q">Задачи: сколько плитки на пол, сколько воды в аквариуме, почему пицца ⌀30 см почти вдвое больше пиццы ⌀22 см.<br><em>Признак:</em> длина умножается сама на себя.</div>
+      </div>
+      <div class="use">
+        <div class="ico">📈</div><b>Рост в одно и то же число раз</b>
+        <p>Вклад в банке, рост бактерий, распространение новостей и вирусов, распад радиоактивных веществ.</p>
+        <div class="sign-q">Задачи: сколько денег будет через 10 лет, когда бактерий станет миллион.<br><em>Признак:</em> «каждый год / день / шаг в k раз больше (меньше)».</div>
+      </div>
+      <div class="use">
+        <div class="ico">💻</div><b>Компьютеры и комбинации</b>
+        <p>Компьютер хранит всё в битах: n битов — это 2ⁿ вариантов. 1 байт = 2⁸ = 256 значений, 1 КБ = 2¹⁰ байт.</p>
+        <div class="sign-q">Задачи: сколько PIN-кодов, насколько надёжен пароль, сколько цветов на экране.<br><em>Признак:</em> «n мест, на каждом k вариантов» → kⁿ.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🔭</div><b>Очень большие и очень малые числа</b>
+        <p>Учёные пишут числа в стандартном виде: до Солнца 1,5·10¹¹ м, размер атома 10⁻¹⁰ м.</p>
+        <div class="sign-q">Задачи: физика, химия, астрономия, сравнение масштабов.<br><em>Признак:</em> в числе слишком много нулей.</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="bank" class="on">💰 Вклад в банке</button>
+      <button data-use="pass">🔐 Пароль</button>
+      <button data-use="rumor">📣 Слух</button>
+      <button data-use="scale">🔭 Масштаб</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Вычислите значение или найдите пропущенный показатель «?».</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="numeric" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

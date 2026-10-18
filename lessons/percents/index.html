@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Проценты в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Проценты в движении</h1>
+  <p>Процент — это сотая часть. «25%» значит «25 из каждых 100».</p>
+  <nav>
+    <a href="#s1">1. Что такое процент</a>
+    <a href="#s2">2. Три задачи</a>
+    <a href="#s3">3. Повысили и понизили</a>
+    <a href="#s4">4. Проценты на проценты</a>
+    <a href="#s5">5. Пункты и ошибки</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое процент <small>сотая часть целого</small></h2>
+    <p class="lead">Разрежем целое на 100 одинаковых клеток. Одна клетка — 1%, а p% — это p клеток из 100.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="p1Label"></div>
+        <label class="r">Процент p <b id="p1v"></b><input type="range" id="p1" min="0" max="100" value="25"></label>
+        <div class="info" id="p1Quick"></div>
+      </div>
+      <div>
+        <div class="stage"><svg id="p1Svg" style="max-width:300px"></svg></div>
+        <div class="info" id="p1Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Три задачи о процентах <small>одна полоска — три вопроса</small></h2>
+    <p class="lead">В каждой задаче три числа: целое (100%), процент и часть. Два известны — третье находим.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns" id="m2">
+          <button data-m2="part" class="on">Часть</button>
+          <button data-m2="whole">Целое</button>
+          <button data-m2="pct">Процент</button>
+        </div>
+        <label class="r">Целое (100%) <b id="w2v"></b><input type="range" id="w2" min="20" max="1000" step="10" value="400"></label>
+        <label class="r">Процент p <b id="q2v"></b><input type="range" id="q2" min="1" max="100" value="25"></label>
+        <p class="lead" id="p2Ask" style="margin:0"></p>
+      </div>
+      <div>
+        <div class="mid" id="p2Formula"></div>
+        <svg id="p2Svg" style="margin-top:10px"></svg>
+        <div class="info" id="p2Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Повысили и понизили <small>на те же проценты — но не вернулись</small></h2>
+    <p class="lead">Цену подняли на p%, а потом снизили на p%. Кажется, что она вернётся к прежней. Проверим.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Цена, ₽ <b id="s3v"></b><input type="range" id="s3p" min="100" max="10000" step="100" value="1000"></label>
+        <label class="r">На сколько процентов <b id="r3v"></b><input type="range" id="r3" min="5" max="90" value="20"></label>
+        <div class="btns">
+          <button data-o3="up" class="on">Сначала +, потом −</button>
+          <button data-o3="down">Сначала −, потом +</button>
+        </div>
+      </div>
+      <div>
+        <svg id="p3Svg"></svg>
+        <div class="info" id="p3Info"></div>
+        <p class="answer" id="p3Ans"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Проценты на проценты <small>простой и сложный рост</small></h2>
+    <p class="lead">Простые проценты каждый год прибавляют одну и ту же сумму. Сложные считаются от новой суммы, поэтому прибавка с каждым годом растёт.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid">Вклад 100 000 ₽</div>
+        <label class="r">Ставка, % в год <b id="r4v"></b><input type="range" id="r4" min="1" max="30" value="12"></label>
+        <label class="r">Лет <b id="n4v"></b><input type="range" id="n4" min="1" max="30" value="10"></label>
+        <div class="info">
+          <span class="chip" style="border-color:var(--b)">■ простые: + одно и то же</span>
+          <span class="chip" style="border-color:var(--a)">■ сложные: × одно и то же</span>
+        </div>
+      </div>
+      <div>
+        <svg id="p4Svg"></svg>
+        <div class="info" id="p4Info"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Процентные пункты и частые ошибки <small>«на 5 пунктов» ≠ «на 5%»</small></h2>
+    <p class="lead">Если сравнивают два процента, разницу между ними называют процентными пунктами (п. п.). А относительный рост считают от старого значения.</p>
+    <div class="grid">
+      <div class="ctl">
+        <label class="r">Было, % <b id="a5v"></b><input type="range" id="a5" min="1" max="60" value="10"></label>
+        <label class="r">Стало, % <b id="b5v"></b><input type="range" id="b5" min="1" max="60" value="15"></label>
+        <div class="mid" id="p5Formula"></div>
+      </div>
+      <div>
+        <svg id="p5Svg"></svg>
+        <div class="info" id="p5Info"></div>
+      </div>
+    </div>
+    <p class="answer">⚠️ Частые ошибки: <b>скидки 20% и 30% подряд — это не 50%</b> (см. раздел 6);
+      вырос на 100% — значит, <b>удвоился</b>; упасть больше чем на 100% нельзя; −50%, потом +50% — это <b>минус 25%</b>.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны проценты <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Проценты нужны, когда надо сравнить части разных целых: 30 из 200 и 45 из 250.
+      Абсолютные числа обманывают, а доля из 100 сравнивается сразу. Так описывают скидки, налоги, рост цен, результаты опросов и качество моделей.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🛒</div><b>Магазин и скидки</b>
+        <p>Цена со скидкой, акции «−30% по карте», наценка продавца.</p>
+        <div class="sign-q">Задачи: сколько заплатить, какая скидка выгоднее.<br><em>Признак:</em> «дешевле на …%», «скидка», «наценка».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏦</div><b>Банк: вклады и кредиты</b>
+        <p>Годовая ставка, ежемесячный платёж, переплата по кредиту.</p>
+        <div class="sign-q">Задачи: сколько будет на вкладе, сколько переплатим.<br><em>Признак:</em> «% годовых», «ставка».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🧾</div><b>Налоги и зарплата</b>
+        <p>Налог в цене товара, подоходный налог, зарплата «на руки».</p>
+        <div class="sign-q">Задачи: сколько налога в чеке, сколько получим.<br><em>Признак:</em> «в том числе НДС», «до вычета налога».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📊</div><b>Опросы и статистика</b>
+        <p>Доли голосов, рост цен (инфляция), изменение показателей за год.</p>
+        <div class="sign-q">Задачи: какая доля «за», на сколько выросли цены.<br><em>Признак:</em> «доля», «выросло на …», «каждый пятый».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📈</div><b>Бизнес-метрики</b>
+        <p>Конверсия сайта, доля вернувшихся клиентов, рост выручки.</p>
+        <div class="sign-q">Задачи: сколько посетителей купят, где теряем клиентов.<br><em>Признак:</em> «из N человек k сделали …».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎯</div><b>Data Science</b>
+        <p>Точность модели, доля пропусков в данных, доля класса в выборке.</p>
+        <div class="sign-q">Задачи: насколько хороша модель, можно ли доверять столбцу.<br><em>Признак:</em> «верно в …% случаев».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="sale" class="on">🛒 Две скидки</button>
+      <button data-use="vat">🧾 Налог в чеке</button>
+      <button data-use="funnel">📈 Воронка продаж</button>
+      <button data-use="spam">🎯 Точность модели</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Знак % и ₽ писать не обязательно.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
