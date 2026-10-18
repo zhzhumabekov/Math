@@ -24,7 +24,12 @@
   <div class="big">404</div>
   <h1>Такой страницы нет</h1>
   <p>Возможно, урок ещё не готов или ссылка устарела.</p>
-  <a href="/">← Ко всем урокам</a>
+  <a href="/" id="home">← Ко всем урокам</a>
 </main>
+<script>
+  // 404 открывается по любому адресу, поэтому путь к главной — от корня сайта.
+  // На GitHub Pages сайт лежит в подпапке /<репозиторий>/, на своём домене или Cloudflare — в корне.
+  if (location.hostname.endsWith('github.io')) document.getElementById('home').href = '/' + location.pathname.split('/')[1] + '/';
+</script>
 </body>
 </html>

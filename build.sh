@@ -5,6 +5,6 @@
 set -e
 rm -rf dist
 mkdir dist
-cp index.html style.css script.js 404.html _headers dist/
+cp index.html style.css script.js 404.html _headers .nojekyll dist/
 cp -r assets lessons dist/
 echo "dist готова: $(find dist -type f | wc -l) файлов"
