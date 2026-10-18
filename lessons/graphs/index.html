@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Графики в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Графики в движении</h1>
+  <p>Координатная плоскость — адрес для каждой точки. График — картинка, по которой за секунду видно, где больше, где меньше и куда всё идёт.</p>
+  <nav>
+    <a href="#s1">1. Координаты точки</a>
+    <a href="#s2">2. Как читать график</a>
+    <a href="#s3">3. Сдвиги графиков</a>
+    <a href="#s4">4. Из данных — в график</a>
+    <a href="#s5">5. Как графики обманывают</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Координаты точки <small>адрес из двух чисел</small></h2>
+    <p class="lead">Точка (x; y): сначала идём по горизонтали на x шагов, потом по вертикали на y. Минус — значит влево или вниз.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f1"></div>
+        <label class="r">x — вправо / влево <b id="px1v"></b><input type="range" id="px1" min="-7" max="7" value="3"></label>
+        <label class="r">y — вверх / вниз <b id="py1v"></b><input type="range" id="py1" min="-7" max="7" value="2"></label>
+        <div class="btns"><button class="primary" id="game1">🎯 Загадать точку</button></div>
+        <p class="lead" id="g1Msg" style="margin:0"></p>
+      </div>
+      <div>
+        <svg id="p1" class="plot" style="max-width:420px;margin:0 auto"></svg>
+        <div class="info" id="i1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Как читать график <small>температура за сутки</small></h2>
+    <p class="lead">По графику видно сразу всё: значение в любой момент, где величина растёт и где падает, самое большое и самое маленькое значение.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f2"></div>
+        <label class="r">Время, ч <b id="t2v"></b><input type="range" id="t2" min="0" max="24" step="0.25" value="15"></label>
+        <label class="r">Порог «теплее чем», °C <b id="c2v"></b><input type="range" id="c2" min="-4" max="12" value="6"></label>
+        <div class="legend"><span><i style="background:var(--c)"></i>растёт</span><span><i style="background:var(--a)"></i>падает</span><span><i style="background:var(--gold)"></i>выше порога</span></div>
+      </div>
+      <div>
+        <svg id="p2" class="plot"></svg>
+        <div class="info" id="i2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Сдвиги и растяжения <small>y = a · f(x − h) + k</small></h2>
+    <p class="lead">Новый график можно получить из знакомого: сдвинуть вправо-влево, вверх-вниз, растянуть или перевернуть.</p>
+    <div class="grid">
+      <div class="ctl">
+        <select id="base3">
+          <option value="sq">y = x²</option>
+          <option value="abs">y = |x|</option>
+          <option value="root">y = √x</option>
+          <option value="exp">y = 2ˣ</option>
+        </select>
+        <div class="mid" id="f3"></div>
+        <label class="r">h — сдвиг вправо <b id="h3v"></b><input type="range" id="h3" min="-5" max="5" value="2"></label>
+        <label class="r">k — сдвиг вверх <b id="k3v"></b><input type="range" id="k3" min="-5" max="5" value="-3"></label>
+        <label class="r">a — растяжение <b id="a3v"></b><input type="range" id="a3" min="-2" max="2" step="0.5" value="1"></label>
+      </div>
+      <div>
+        <svg id="p3" class="plot"></svg>
+        <div class="info" id="i3"></div>
+      </div>
+    </div>
+    <p class="answer">⚠️ Частая ошибка: в y = (x <b>− 2</b>)² график сдвигается <b>вправо</b>, а не влево. Вершина там, где скобка равна нулю: x − 2 = 0, x = 2.</p>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Из данных — в график <small>какая функция подходит</small></h2>
+    <p class="lead">В жизни формулы нет — есть таблица. Ставим точки и смотрим на форму облака: прямая, парабола или экспонента? Лучшая модель ошибается меньше всех.</p>
+    <div class="grid">
+      <div class="ctl">
+        <select id="d4">
+          <option value="study">📚 Часы подготовки → баллы</option>
+          <option value="brake">🚗 Скорость → тормозной путь</option>
+          <option value="subs">📱 Дни → подписчики</option>
+        </select>
+        <div class="btns">
+          <button data-m4="lin">прямая</button>
+          <button data-m4="quad">парабола</button>
+          <button data-m4="exp">экспонента</button>
+        </div>
+        <div class="mid" id="f4"></div>
+      </div>
+      <div>
+        <svg id="p4" class="plot"></svg>
+        <div class="info" id="i4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Как графики обманывают <small>смотрите на ось</small></h2>
+    <p class="lead">Одни и те же числа можно нарисовать «спокойно» или «драматично». Главный приём — ось y начинается не с нуля.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid">Продажи: 96 → 98 → 101 → 104</div>
+        <label class="r">Ось y начинается с <b id="z5v"></b><input type="range" id="z5" min="0" max="95" value="0"></label>
+        <div class="info" id="i5"></div>
+      </div>
+      <div>
+        <svg id="p5"></svg>
+      </div>
+    </div>
+    <p class="answer">Прежде чем верить графику, проверьте: <b>с чего начинается ось</b>, одинаковы ли шаги на шкале, не обрезан ли период.
+      Аналитик данных обязан рисовать честно — и замечать обман в чужих графиках.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны графики и координаты <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Координаты нужны, когда надо точно указать место: на карте, на экране, в таблице данных. График — когда надо понять, как одна величина
+      меняется вместе с другой, и увидеть это быстрее, чем по столбцу чисел.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">🗺️</div><b>Карты и GPS</b>
+        <p>Широта и долгота — координаты точки на Земле. Навигатор считает по ним расстояния.</p>
+        <div class="sign-q">Задачи: как далеко, в какую сторону.<br><em>Признак:</em> «где находится», «сколько идти».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🎮</div><b>Игры и графика</b>
+        <p>Каждый пиксель экрана — точка (x; y). Движение персонажа — сдвиг координат.</p>
+        <div class="sign-q">Задачи: переместить, отразить, столкнуться.<br><em>Признак:</em> «сдвинуть на …», «отразить».</div>
+      </div>
+      <div class="use">
+        <div class="ico">📉</div><b>Финансы</b>
+        <p>Графики цен акций и валют, рост вклада, расходы по месяцам.</p>
+        <div class="sign-q">Задачи: когда купить, когда продать, где пик.<br><em>Признак:</em> величина меняется во времени.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏃</div><b>Движение и спорт</b>
+        <p>График «путь — время»: крутой участок — быстро, ровный — стоим.</p>
+        <div class="sign-q">Задачи: скорость на участке, где остановка.<br><em>Признак:</em> «за сколько», «с какой скоростью».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🌡️</div><b>Погода и наука</b>
+        <p>Температура, давление, кардиограмма, рост растения — всё рисуют графиками.</p>
+        <div class="sign-q">Задачи: найти максимум, сравнить два ряда.<br><em>Признак:</em> «когда было больше всего».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🤖</div><b>Data Science</b>
+        <p>Анализ данных начинают с графиков: точки, гистограммы, линии. Каждый объект — точка в пространстве признаков.</p>
+        <div class="sign-q">Задачи: найти зависимость, выбросы, группы.<br><em>Признак:</em> «есть ли связь между …».</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="map" class="on">🗺️ Путь до клада</button>
+      <button data-use="game">🎮 Персонаж в игре</button>
+      <button data-use="stock">📉 Акции</button>
+      <button data-use="run">🏃 Пробежка</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Отрицательное — со знаком минус.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

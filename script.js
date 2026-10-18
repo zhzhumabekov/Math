@@ -8,7 +8,7 @@ const COURSE = [
     { ico: '📐', name: 'Корни', about: 'обратное действие к степени', href: 'lessons/roots/index.html' },
     { ico: '⚖️', name: 'Алгебра', about: 'переменные, выражения, уравнения', href: 'lessons/algebra/index.html' },
     { ico: '📈', name: 'Функции', about: 'линейные, квадратичные, экспонента, логарифм', href: 'lessons/functions/index.html' },
-    { ico: '🗺️', name: 'Графики функций', about: 'координатная плоскость' },
+    { ico: '🗺️', name: 'Графики функций', about: 'координатная плоскость', href: 'lessons/graphs/index.html' },
     { ico: '⛰️', name: 'Производная', about: 'скорость изменения, минимум и максимум' },
   ] },
   { title: 'Линейная алгебра', goal: 'понимать, как модели работают с числовыми данными', lessons: [
