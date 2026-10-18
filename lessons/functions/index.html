@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Функции в движении</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="home" href="../../index.html">← Все уроки</a>
+  <h1>Функции в движении</h1>
+  <p>Функция — правило, которое каждому входу x даёт ровно один выход y. Прямая, парабола, экспонента и логарифм — четыре самых нужных правила.</p>
+  <nav>
+    <a href="#s1">1. Что такое функция</a>
+    <a href="#s2">2. Линейная</a>
+    <a href="#s3">3. Квадратичная</a>
+    <a href="#s4">4. Экспонента</a>
+    <a href="#s5">5. Логарифм</a>
+    <a href="#s6">6. Зачем это нужно</a>
+    <a href="#s7">7. Проверь себя</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 1 -->
+  <section id="s1">
+    <h2>1. Что такое функция <small>машина «вход → выход»</small></h2>
+    <p class="lead">Кладём в машину число x — она по правилу выдаёт y. Каждая пара (x; y) — точка. Все точки вместе — график функции.</p>
+    <div class="grid">
+      <div class="ctl">
+        <select id="rule1">
+          <option value="lin">y = 2x + 1</option>
+          <option value="sq">y = x²</option>
+          <option value="down">y = 10 − x</option>
+        </select>
+        <label class="r">Вход x <b id="x1v"></b><input type="range" id="x1" min="-5" max="5" value="2"></label>
+        <div class="btns">
+          <button class="primary" id="feed1">В машину ▶</button>
+          <button id="all1">Весь график</button>
+          <button id="clear1">Очистить</button>
+        </div>
+        <div class="machine" id="m1"></div>
+      </div>
+      <div>
+        <svg id="p1" class="plot"></svg>
+        <div class="table" id="t1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <h2>2. Линейная функция <small>y = kx + b — прямая</small></h2>
+    <p class="lead">Каждый шаг вправо по x меняет y на одно и то же число k. Поэтому график — прямая. b — значение при x = 0, точка старта.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="big" id="f2" style="font-size:38px;white-space:nowrap"></div>
+        <label class="r">k — наклон <b id="k2v"></b><input type="range" id="k2" min="-3" max="3" step="0.5" value="1.5"></label>
+        <label class="r">b — старт <b id="b2v"></b><input type="range" id="b2" min="-6" max="6" value="-2"></label>
+      </div>
+      <div>
+        <svg id="p2" class="plot"></svg>
+        <div class="info" id="i2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <h2>3. Квадратичная функция <small>y = ax² + bx + c — парабола</small></h2>
+    <p class="lead">Квадрат делает график изогнутым: он спускается до вершины и поднимается (или наоборот). Вершина — самое маленькое или самое большое значение.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f3"></div>
+        <label class="r">a — ветви и крутизна <b id="a3v"></b><input type="range" id="a3" min="-2" max="2" step="0.5" value="1"></label>
+        <label class="r">b — сдвиг вершины <b id="b3v"></b><input type="range" id="b3" min="-6" max="6" value="-2"></label>
+        <label class="r">c — старт при x = 0 <b id="c3v"></b><input type="range" id="c3" min="-8" max="8" value="-3"></label>
+      </div>
+      <div>
+        <svg id="p3" class="plot"></svg>
+        <div class="info" id="i3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <h2>4. Экспонента <small>y = a · qˣ — умножение на каждом шаге</small></h2>
+    <p class="lead">Линейная функция каждый шаг прибавляет одно и то же. Экспонента каждый шаг умножает на одно и то же. Сначала разница незаметна, потом — огромна.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="mid" id="f4"></div>
+        <label class="r">q — во сколько раз за шаг <b id="q4v"></b><input type="range" id="q4" min="0.5" max="2" step="0.1" value="1.5"></label>
+        <label class="r">Шагов <b id="n4v"></b><input type="range" id="n4" min="1" max="12" value="8"></label>
+        <div class="legend"><span><i style="background:var(--a)"></i>экспонента: × q</span><span><i style="background:var(--b)"></i>прямая: + одно и то же</span></div>
+      </div>
+      <div>
+        <svg id="p4"></svg>
+        <div class="info" id="i4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <h2>5. Логарифм <small>сколько раз умножить, чтобы получить число</small></h2>
+    <p class="lead">log₂ 32 = 5, потому что 2 · 2 · 2 · 2 · 2 = 32. Логарифм — обратное действие к экспоненте: он считает шаги умножения.</p>
+    <div class="grid">
+      <div class="ctl">
+        <div class="btns">
+          <button data-base="2" class="on">основание 2</button>
+          <button data-base="10">основание 10</button>
+        </div>
+        <label class="r">Число y <b id="y5v"></b><input type="range" id="y5" min="0" max="1000" value="500"></label>
+        <div class="big" id="f5"></div>
+      </div>
+      <div>
+        <div class="machine" id="hops5"></div>
+        <svg id="p5"></svg>
+        <div class="info" id="i5"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <h2>6. Зачем нужны функции <small>когда применять и какие задачи решают</small></h2>
+    <p class="lead">Функция нужна, когда одна величина зависит от другой и надо предсказать результат: сколько заплатим за x минут, где будет мяч через t секунд,
+      сколько будет бактерий через час. Главное — узнать <b>тип</b> зависимости: прибавляется одно и то же, умножается на одно и то же или есть максимум.</p>
+
+    <div class="uses">
+      <div class="use">
+        <div class="ico">📏</div><b>Линейная</b>
+        <p>Тариф «за минуту», зарплата за часы, расход топлива, перевод единиц.</p>
+        <div class="sign-q">Задачи: сколько будет стоить, когда закончится бак.<br><em>Признак:</em> «каждый … прибавляет одно и то же».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🏀</div><b>Квадратичная</b>
+        <p>Полёт мяча, тормозной путь, площадь, выручка при изменении цены.</p>
+        <div class="sign-q">Задачи: максимальная высота, лучшая цена.<br><em>Признак:</em> «наибольший / наименьший», площадь, падение.</div>
+      </div>
+      <div class="use">
+        <div class="ico">🦠</div><b>Экспонента</b>
+        <p>Рост бактерий и подписчиков, вклад с процентами, остывание чая, распад.</p>
+        <div class="sign-q">Задачи: сколько будет через n шагов.<br><em>Признак:</em> «удваивается», «каждый год на …%».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🔊</div><b>Логарифм</b>
+        <p>Децибелы, шкала землетрясений, pH, число цифр в числе.</p>
+        <div class="sign-q">Задачи: когда вырастет в N раз, во сколько раз громче.<br><em>Признак:</em> «через сколько», «во сколько раз».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🔍</div><b>Алгоритмы</b>
+        <p>Бинарный поиск: делим пополам — нужен log₂ N шагов. Поэтому поиск среди миллиарда записей быстрый.</p>
+        <div class="sign-q">Задачи: сколько шагов займёт поиск.<br><em>Признак:</em> «каждый раз вдвое меньше».</div>
+      </div>
+      <div class="use">
+        <div class="ico">🤖</div><b>Data Science</b>
+        <p>Модель — функция от признаков. Логарифмом «сжимают» цены и доходы, экспонента стоит внутри логистической регрессии.</p>
+        <div class="sign-q">Задачи: выбрать вид модели, подготовить данные.<br><em>Признак:</em> данные растут «взрывом» или похожи на кривую.</div>
+      </div>
+    </div>
+
+    <h3>Попробуйте сами</h3>
+    <div class="tabs">
+      <button data-use="ball" class="on">🏀 Бросок мяча</button>
+      <button data-use="germs">🦠 Бактерии</button>
+      <button data-use="tea">☕ Остывание чая</button>
+      <button data-use="search">🔍 Угадай число</button>
+    </div>
+    <div class="grid">
+      <div class="ctl" id="useCtl"></div>
+      <div id="useOut"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <h2>7. Проверь себя</h2>
+    <p class="lead">Введите число. Дробную часть — через запятую, отрицательное — со знаком минус.</p>
+    <div id="qTask"></div>
+    <div class="quiz-in" id="qBox">
+      <input id="qIn" inputmode="decimal" aria-label="ответ">
+      <div class="btns">
+        <button class="primary" id="qCheck">Проверить</button>
+        <button id="qNew">Новое задание</button>
+      </div>
+      <span class="score" id="qScore"></span>
+    </div>
+    <div id="qMsg"></div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

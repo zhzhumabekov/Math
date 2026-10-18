@@ -7,7 +7,7 @@ const COURSE = [
     { ico: '🚀', name: 'Степени', about: 'быстрый рост, большие и малые числа', href: 'lessons/powers/index.html' },
     { ico: '📐', name: 'Корни', about: 'обратное действие к степени', href: 'lessons/roots/index.html' },
     { ico: '⚖️', name: 'Алгебра', about: 'переменные, выражения, уравнения', href: 'lessons/algebra/index.html' },
-    { ico: '📈', name: 'Функции', about: 'линейные, квадратичные, экспонента, логарифм' },
+    { ico: '📈', name: 'Функции', about: 'линейные, квадратичные, экспонента, логарифм', href: 'lessons/functions/index.html' },
     { ico: '🗺️', name: 'Графики функций', about: 'координатная плоскость' },
     { ico: '⛰️', name: 'Производная', about: 'скорость изменения, минимум и максимум' },
   ] },
