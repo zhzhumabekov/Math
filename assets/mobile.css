@@ -1,0 +1,48 @@
+/* Мобильная версия: общие правила для главной и всех уроков.
+   Подключается после style.css урока, поэтому переопределяет его на узком экране. */
+@media (max-width: 720px) {
+  header { padding: 20px 14px 4px; }
+  main { padding: 4px 10px 48px; }
+  section { padding: 16px 14px; margin-top: 14px; border-radius: 14px; }
+  h2 { font-size: 20px; }
+  h2 small { display: block; margin: 2px 0 0; }
+
+  /* сначала картинка, под ней ползунки: двигая ползунок, видно, что меняется */
+  .grid { gap: 14px; }
+  .grid > :last-child { order: -1; }
+
+  .big { font-size: 34px; }
+  .mid { font-size: 20px; }
+  #qTask { font-size: 24px; }
+  .quiz-in input { width: 100%; }
+  .score { margin-left: 0; }
+  sup { font-size: .8em; }
+  .px { font-size: 10px; }
+
+  /* ползунки: высокая зона касания */
+  label.r input[type=range] { height: 32px; margin: 0; }
+
+  /* вкладки — одной строкой с прокруткой вбок, а не столбиком */
+  .tabs { flex-wrap: nowrap; overflow-x: auto; margin: 0 -14px 14px; padding: 0 14px 4px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { flex: none; }
+
+  /* полоски-рейтинги: подпись и значение сверху, полоска на всю ширину под ними */
+  .bar, #b4 .bar { grid-template-columns: 1fr auto; row-gap: 2px; }
+  .bar .track { grid-column: 1 / -1; grid-row: 2; }
+
+  /* матрицы компактнее, чтобы «A + B» помещалось в строку */
+  .mat { gap: 3px; padding: 4px 6px; }
+  .mc { min-width: 32px; height: 32px; font-size: 14px; border-radius: 6px; }
+  .mrow { gap: 6px; }
+  .op { font-size: 22px; }
+
+  /* главная: две колонки компактных карточек вместо длинной ленты */
+  .lessons { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lesson { padding: 10px; font-size: 13px; }
+  .lesson .ico { font-size: 22px; }
+  .lesson b { font-size: 14px; }
+
+  .home { display: inline-block; padding: 6px 0; }
+  .uses { grid-template-columns: 1fr; }
+}

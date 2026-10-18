@@ -1,0 +1,20 @@
+<!-- Тест урока: вставляется сразу после <head> в копию index.html. Двигает все ползунки, жмёт кнопки и вкладки, решает 200 заданий тренажёра; ошибки пишет в data-errs у body. -->
+<script>
+window.__errs = [];
+window.addEventListener('error', e => __errs.push(e.message + ' @' + e.lineno));
+window.addEventListener('load', () => {
+  const fire = (n, t) => n.dispatchEvent(new Event(t, { bubbles: true }));
+  const badText = tag => { const m = document.body.innerText.match(/не число|NaN|Infinity|undefined/); if (m) __errs.push(tag + ': на странице «' + m[0] + '»'); };
+  const sweep = root => root.querySelectorAll('input[type=range]').forEach(r => {
+    for (const v of [r.min, r.max, (+r.min + +r.max) / 2]) { r.value = v; fire(r, 'input'); }
+  });
+  try {
+    badText('загрузка'); sweep(document); badText('ползунки');
+    document.querySelectorAll('select').forEach(s => [...s.options].forEach(o => { s.value = o.value; fire(s, 'input'); }));
+    document.querySelectorAll('main button:not([data-use]):not([id=qCheck])').forEach(b => { b.click(); b.click(); });
+    document.querySelectorAll('[data-use]').forEach(b => { b.click(); sweep($('useCtl')); document.querySelectorAll('[id=useCtl] .chip.click').forEach(c => c.click()); badText('вкладка ' + b.dataset.use); });
+    if ($("qIn")) for (let i = 0; i < 200; i++) { newQuiz(); $('qIn').value = String(q.ans).replace('.', ','); check(); if (!$('qMsg').className.includes('ok')) __errs.push('quiz rejects own answer: ' + q.text); }
+  } catch (e) { __errs.push('THROW ' + e.message); }
+  document.body.setAttribute('data-errs', JSON.stringify(__errs));
+});
+</script>
